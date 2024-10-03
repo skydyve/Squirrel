@@ -5,6 +5,8 @@
     <div class="search-section">
         <input type="text" id="search-bar" placeholder="Rechercher un client..." onkeyup="searchClient()">
         <button id="create-client-btn">Créer un client</button>
+        
+        
     </div>
 
     <!-- Liste des clients sous forme de boutons -->
@@ -54,54 +56,56 @@
             <button id="submit-client-btn">Soumettre</button>
         </div>
     </div>
-
+    
     <!-- Formulaire de modification de client (initialement caché) -->
-    <div id="edit-client-form" style="display: none;">
-        <button id="edit-back-btn" class="back-btn">← Retour</button>
+<div id="edit-client-form" style="display: none;">
+    <button id="edit-back-btn" class="back-btn">← Retour</button>
 
-        <!-- Bouton pour afficher/cacher le formulaire des biens -->
-        <button id="openBiensForm" class="biens-btn" style="float: right; width: auto;">Ajouter des biens</button>
+    <!-- Bouton pour afficher/cacher le formulaire des biens -->
+    <button id="openBiensForm" class="biens-btn" style="float: right; width: auto;">Ajouter des biens</button>
+    <!-- Bouton pour afficher la liste des biens -->
+    <button id="showBiensList" class="btn" style="float: right; width: auto; margin-right: 10px;">Liste des biens</button>
 
-        <h2>Modifier Client</h2>
-        <div class="client-form">
-            <table>
-                <tr>
-                    <td>Civilité:</td>
-                    <td><input type="text" id="edit-civilite" placeholder="M. / Mme"></td>
-                </tr>
-                <tr>
-                    <td>Nom:</td>
-                    <td><input type="text" id="edit-nom" placeholder="Nom du client"></td>
-                </tr>
-                <tr>
-                    <td>Prénom:</td>
-                    <td><input type="text" id="edit-prenom" placeholder="Prénom du client"></td>
-                </tr>
-                <tr>
-                    <td>Adresse principale:</td>
-                    <td><input type="text" id="edit-adresse_principale" placeholder="Adresse"></td>
-                </tr>
-                <tr>
-                    <td>Code postal:</td>
-                    <td><input type="text" id="edit-code_postal" placeholder="Code postal"></td>
-                    <td>Pays:</td>
-                    <td><input type="text" id="edit-pays" placeholder="Pays"></td>
-                </tr>
-                <tr>
-                    <td>Tél fixe:</td>
-                    <td><input type="text" id="edit-tel_fixe" placeholder="Téléphone fixe"></td>
-                    <td>Tél portable:</td>
-                    <td><input type="text" id="edit-tel_portable" placeholder="Téléphone portable"></td>
-                </tr>
-                <tr>
-                    <td>Email:</td>
-                    <td><input type="email" id="edit-email" placeholder="Email"></td>
-                </tr>
-            </table>
-            <button id="update-client-btn">Mettre à jour</button>
-            <button id="delete-client-btn">Supprimer</button>
-        </div>
+    <h2>Modifier Client</h2>
+    <div class="client-form">
+        <table>
+            <tr>
+                <td>Civilité:</td>
+                <td><input type="text" id="edit-civilite" placeholder="M. / Mme"></td>
+            </tr>
+            <tr>
+                <td>Nom:</td>
+                <td><input type="text" id="edit-nom" placeholder="Nom du client"></td>
+            </tr>
+            <tr>
+                <td>Prénom:</td>
+                <td><input type="text" id="edit-prenom" placeholder="Prénom du client"></td>
+            </tr>
+            <tr>
+                <td>Adresse principale:</td>
+                <td><input type="text" id="edit-adresse_principale" placeholder="Adresse"></td>
+            </tr>
+            <tr>
+                <td>Code postal:</td>
+                <td><input type="text" id="edit-code_postal" placeholder="Code postal"></td>
+                <td>Pays:</td>
+                <td><input type="text" id="edit-pays" placeholder="Pays"></td>
+            </tr>
+            <tr>
+                <td>Tél fixe:</td>
+                <td><input type="text" id="edit-tel_fixe" placeholder="Téléphone fixe"></td>
+                <td>Tél portable:</td>
+                <td><input type="text" id="edit-tel_portable" placeholder="Téléphone portable"></td>
+            </tr>
+            <tr>
+                <td>Email:</td>
+                <td><input type="email" id="edit-email" placeholder="Email"></td>
+            </tr>
+        </table>
+        <button id="update-client-btn">Mettre à jour</button>
+        <button id="delete-client-btn">Supprimer</button>
     </div>
+</div>
 
     <!-- Liste des biens -->
     <div id="biens-list" style="display: none;">
@@ -167,5 +171,6 @@
         <input type="number" id="surfaceTerrasse"><br>
 
         <button type="submit" id="saveBiensBtn">Enregistrer le bien</button>
+        <button id="deleteBienBtn" class="btn delete-btn">Supprimer le bien</button>
     </div>
 </div>

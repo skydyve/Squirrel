@@ -402,7 +402,20 @@ app.get('/get-biens/:clientId', authenticateToken, (req, res) => {
         res.json(rows); // Renvoie les biens sous forme de JSON
     });
 });
+app.get('/get-bien/:id', authenticateToken, (req, res) => {
+    const bienId = req.params.id;
 
+    db.get('SELECT * FROM biens WHERE id = ?', [bienId], (err, row) => {
+        if (err) {
+            console.error(err.message);
+            res.status(500).send('Erreur lors de la récupération du bien');
+        } else if (!row) {
+            res.status(404).send('Bien non trouvé');
+        } else {
+            res.json(row);  // Renvoie les informations du bien sous forme de JSON
+        }
+    });
+});
 app.post('/create-bien', authenticateToken, (req, res) => {
     const { client_id, nbr_etage, surface_maison, nbr_chambres, nbr_salle_de_bain, nbr_salle_eau, nbr_salon, code_alarme,
             surface_jardin, cloture, code_portail, piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse } = req.body;
@@ -419,6 +432,18 @@ app.post('/create-bien', authenticateToken, (req, res) => {
             return res.status(500).json({ message: 'Erreur lors de la création du bien.' });
         }
         res.status(200).json({ message: 'Bien créé avec succès.' });
+    });
+});
+
+app.delete('/delete-bien/:id', authenticateToken, (req, res) => {
+    const bienId = req.params.id;
+
+    db.run('DELETE FROM biens WHERE id = ?', [bienId], function (err) {
+        if (err) {
+            return res.status(500).json({ error: 'Erreur lors de la suppression du bien.' });
+        }
+
+        res.json({ message: 'Bien supprimé avec succès.' });
     });
 });
 

@@ -77,6 +77,7 @@ function initializeClientPage() {
                         if (clientList) clientList.style.display = 'block';
                     });
                 }
+                
 
                 if (editBackBtn) {
                     editBackBtn.addEventListener('click', function () {
@@ -126,6 +127,42 @@ function initializeClientPage() {
             })
             .catch(error => console.error('Erreur lors du chargement des biens du client:', error));
     }
+                // Ajouter un événement pour le bouton "Liste des biens"
+            document.getElementById('showBiensList').addEventListener('click', function () {
+                const clientForm = document.getElementById('edit-client-form');
+                const biensList = document.getElementById('biens-list');
+                const updateClientBtn = document.getElementById('update-client-btn');
+                const deleteClientBtn = document.getElementById('delete-client-btn');
+
+                // Masquer le formulaire client et les boutons de modification client
+                if (clientForm) clientForm.style.display = 'none';
+                if (updateClientBtn) updateClientBtn.style.display = 'none';
+                if (deleteClientBtn) deleteClientBtn.style.display = 'none';
+
+                // Afficher la liste des biens
+                if (biensList) biensList.style.display = 'block';
+            });
+
+            // Gestion de la suppression du bien
+document.getElementById('deleteBienBtn').addEventListener('click', async function () {
+    if (confirm('Êtes-vous sûr de vouloir supprimer ce bien ?')) {
+        try {
+            const response = await fetch(`/delete-bien/${currentBienId}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                alert('Bien supprimé avec succès');
+                loadClientBiens(currentClientId);  // Recharger la liste des biens
+                document.getElementById('biensForm').style.display = 'none';  // Masquer le formulaire des biens
+            } else {
+                alert('Erreur lors de la suppression du bien');
+            }
+        } catch (error) {
+            console.error('Erreur lors de la suppression du bien :', error);
+        }
+    }
+});
 
     // Fonction pour charger les détails d'un bien pour l'afficher dans le formulaire
     function loadBienDetails(bienId) {
