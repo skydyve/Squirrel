@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda</title>
+    <link rel="stylesheet" href="stylesindex.css">
+</head>
+<body>
+    <div class="main-content">
+        <h2 id="monthYear"></h2>
+        <div class="calendar-controls">
+            <button id="prevMonth" class="calendar-btn">←</button>
+            <button id="nextMonth" class="calendar-btn">→</button>
+            <button id="weekViewBtn" class="calendar-btn">Semaine</button>
+            <button id="monthViewBtn" class="calendar-btn">Mois</button>
+        </div>
+        <table id="calendarTable" class="calendar">
+            <thead>
+                <tr>
+                    <th>Lundi</th>
+                    <th>Mardi</th>
+                    <th>Mercredi</th>
+                    <th>Jeudi</th>
+                    <th>Vendredi</th>
+                    <th>Samedi</th>
+                    <th>Dimanche</th>
+                </tr>
+            </thead>
+            <tbody id="calendarBody">
+                <!-- Les jours seront insérés ici dynamiquement via JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Popup pour afficher/modifier/supprimer un événement -->
+    <div id="eventPopup" class="popup" style="display: none;">
+        <!-- Header avec croix de fermeture en haut à gauche -->
+        <div class="popup-header">
+            <button id="closePopupCross" class="close-popup-cross">&times;</button>
+            <h3 id="popupTitle">Modifier un rendez-vous</h3>
+        </div>
+        <div class="popup-content">
+            <form id="eventForm">
+                <input type="hidden" id="eventId" />
+                <label for="eventTitle">Titre :</label>
+                <input type="text" id="eventTitle" required />
+                
+                <label for="eventTime">Heure :</label>
+                <input type="time" id="eventTime" required />
+                <label for="eventDuration">Durée (HH:MM) :</label>
+                <input type="time" id="eventDuration" required />
+                
+                <label for="eventDescription">Description :</label>
+                <textarea id="eventDescription"></textarea>
+
+                <label for="eventCategory">Catégorie :</label>
+                <select id="eventCategory">
+                    <option value="rendez-vous">Rendez-vous</option>
+                    <option value="inspection">Inspection</option>
+                    <option value="intervention">Intervention</option>
+                    <option value="repos">Repos</option>
+                    <option value="perso">Perso</option>
+                </select>
+                
+                <button type="submit" id="saveEventBtn" class="save-btn">Enregistrer</button>
+                <button type="button" id="deleteEventBtn" class="delete-btn">Supprimer</button>               
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,455 @@
+/* Styles généraux */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #72edf2 10%, #5151e5 100%);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Container global qui englobe le menu latéral et le contenu principal */
+.container {
+    display: flex;
+    width: 100%;
+    height: 100vh; /* Le conteneur occupe toute la hauteur de la fenêtre */
+}
+
+/* Menu latéral */
+.sidebar {
+    width: 15%; /* Prend environ 15% de la largeur de l'écran */
+    height: 100%;
+    background-color: #5151e5;
+    color: white;
+    padding-top: 50px;
+    box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    position: relative;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    margin: 20px 0;
+}
+
+.sidebar ul li a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    padding: 10px 20px;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.sidebar ul li a:hover {
+    background-color: #3434d4;
+}
+
+/* Contenu principal */
+.main-content {
+    width: 85%; /* Prend environ 85% de la largeur de l'écran */
+    background: #fff;
+    padding: 40px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    overflow-y: auto; /* Permet de scroller si le contenu dépasse la hauteur de la page */
+    animation: fadeIn 1s ease-in-out;
+}
+
+/* Effet d'apparition */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px); /* Animation vers le bas */
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Effet de disparition */
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(20px); /* Animation vers le haut */
+    }
+}
+
+/* Appliquer les animations pour le contenu principal */
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out forwards; /* Animation d'entrée */
+}
+
+.fade-out {
+    animation: fadeOut 0.5s ease-in-out forwards; /* Animation de sortie */
+}
+
+/* Formattage des champs de formulaire */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="date"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    background-color: #f1f1f1;
+    font-size: 16px;
+}
+
+/* Styles pour les boutons */
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #5151e5;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+button:hover {
+    background-color: #3434d4;
+}
+
+h1, h2 {
+    margin-bottom: 20px;
+}
+
+#error-msg {
+    color: red;
+    margin-top: 10px;
+}
+
+.search-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Assure que la barre de recherche et le bouton sont alignés verticalement */
+    margin-bottom: 20px;
+}
+
+#search-bar {
+    width: 70%; /* La barre de recherche prendra 70% de la largeur */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px; /* Taille de police ajustée */
+}
+
+#create-client-btn {
+    width: 20%; /* Réduction de la largeur du bouton à 20% */
+    height: 42px; /* Ajuste la hauteur pour être similaire à la barre de recherche */
+    padding: 0 10px; /* Moins de padding pour rendre le bouton plus petit */
+    background-color: #5151e5;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+    font-size: 16px; /* Assure que la taille de la police est similaire à celle de la barre de recherche */
+}
+
+#create-client-btn:hover {
+    background-color: #3434d4;
+}
+
+.client-btn {
+    background-color: #5151e5;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-bottom: 10px;
+    width: 100%; /* Le bouton prend toute la largeur disponible */
+    text-align: left; /* Alignement du texte à gauche */
+}
+
+.client-btn:hover {
+    background-color: #3434d4;
+}
+
+/* Formulaire caché par défaut */
+#edit-client-form, #create-client-form {
+    display: none; /* Le formulaire est masqué au départ */
+    margin-top: 20px;
+}
+
+#edit-client-form.show, #create-client-form.show {
+    display: block; /* Montrer le formulaire quand on ajoute la classe "show" */
+}
+
+#delete-client-btn {
+    background-color: red;
+    color: white;
+    display: inline-block; /* Assurez-vous qu'il est en mode bloc pour le rendre visible */
+}
+
+.back-btn {
+    background-color: #5151e5;  /* Même couleur de fond que le bouton 'Créer un client' */
+    color: white;  /* Même couleur de texte */
+    border: none;
+    padding: 10px 20px;  /* Même padding pour correspondre à 'Créer un client' */
+    border-radius: 5px;  /* Même bordure arrondie */
+    cursor: pointer;
+    font-size: 16px;  /* Même taille de police */
+    width: auto;  /* Ajuste la largeur automatiquement */
+    text-align: center;  /* Centre le texte */
+    margin-bottom: 20px;  /* Un espace sous le bouton */
+}
+
+.back-btn:hover {
+    background-color: #3434d4;  /* Change la couleur lors du survol, comme 'Créer un client' */
+}
+/* Style de base pour le popup */
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    width: 300px;
+}
+
+.popup-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.popup-content label {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.popup-content input,
+.popup-content textarea {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.popup-content button {
+    padding: 10px;
+    background-color: #5151e5;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 10px;
+    margin-top: 10px;
+}
+
+.popup-content button:hover {
+    background-color: #3434d4;
+}
+
+#closePopupBtn {
+    background-color: #f44336;
+}
+/* Titre du mois et année */
+#monthYear {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* Style des boutons de navigation */
+.calendar-controls {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.calendar-btn {
+    background-color: #5151e5;
+    color: white;
+    border: none;
+    padding: 10px;
+    margin: 0 5px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.calendar-btn:hover {
+    background-color: #3434d4;
+}
+
+/* Assurer que le tableau du calendrier ait des colonnes de largeur égale */
+.calendar {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* Assure une largeur égale pour chaque colonne */
+}
+
+/* Centrer le texte dans les en-têtes (jours de la semaine) */
+.calendar th {
+    background-color: #f0f0f0;
+    font-weight: bold;
+    padding: 10px;
+    text-align: center; /* Centre le texte dans chaque cellule d'en-tête */
+    width: 14.28%; /* Chaque jour prend environ 1/7e de la largeur (100 / 7 ≈ 14.28) */
+}
+
+/* Centrer également le texte dans les cellules du calendrier */
+.calendar td {
+    height: 100px;
+    text-align: center; /* Centre le texte dans les cellules */
+    vertical-align: top;
+    border: 1px solid #ddd;
+    padding: 5px;
+    position: relative;
+    width: 14.28%; /* Chaque cellule de jour prend la même largeur que l'en-tête */
+}
+
+/* Style des événements */
+.event {
+    background-color: #5151e5;
+    color: white;
+    padding: 5px;
+    margin-top: 5px;
+    border-radius: 5px;
+    font-size: 12px;
+}
+
+/* Style pour les jours grisés (pas dans le mois en cours) */
+.grayed {
+    background-color: #f9f9f9;
+    color: #ccc;
+}
+
+/* Styles pour le popup */
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    width: 400px; /* Ajustement de la largeur */
+    height: auto;
+}
+
+/* Style pour la croix de fermeture */
+.close-popup-cross {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #f44336;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Améliorer la mise en page */
+.form-group {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    flex: 1;
+    margin-right: 10px;
+    font-weight: bold;
+    color: #333;
+}
+
+#eventTime,#eventDuration, #eventDescription, #eventCategory, #eventTitle {
+    flex: 2;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    background-color: #f9f9f9;
+}
+
+/* Styliser le champ description */
+#eventDescription {
+    height: 80px;
+    resize: vertical; /* Permettre à l'utilisateur de redimensionner verticalement */
+}
+
+/* Styliser le champ catégorie */
+#eventCategory {
+    padding: 10px;
+    font-size: 16px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 100%;
+    appearance: none; /* Pour uniformiser le style sur tous les navigateurs */
+}
+
+/* Boutons */
+#saveEventBtn {
+    background-color: #5151e5;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+#saveEventBtn:hover {
+    background-color: #3434d4;
+}
+
+#deleteEventBtn {
+    background-color: #f44336;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+}
+
+#deleteEventBtn:hover {
+    background-color: #d32f2f;
+}
+
+/* Espacement supplémentaire pour une meilleure mise en page */
+#eventTitle, #eventTime, #eventDescription, #eventCategory {
+    margin-bottom: 20px;
+}
+

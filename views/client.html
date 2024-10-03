@@ -1,0 +1,168 @@
+<div class="main-content">
+    <h2>Clients</h2>
+
+    <!-- Section de recherche et de création -->
+    <div class="search-section">
+        <input type="text" id="search-bar" placeholder="Rechercher un client..." onkeyup="searchClient()">
+        <button id="create-client-btn">Créer un client</button>
+    </div>
+
+    <!-- Liste des clients sous forme de boutons -->
+    <div id="client-list" class="client-buttons">
+        <!-- Liste des clients chargés depuis la base de données -->
+    </div>
+
+    <!-- Formulaire de création de client (initialement caché) -->
+    <div id="create-client-form" style="display: none;">
+        <button id="create-back-btn" class="back-btn">← Retour</button>
+        <h2>Création Nouveau Client</h2>
+        <div class="client-form">
+            <table>
+                <tr>
+                    <td>Civilité:</td>
+                    <td><input type="text" id="civilite" placeholder="M. / Mme"></td>
+                </tr>
+                <tr>
+                    <td>Nom:</td>
+                    <td><input type="text" id="nom" placeholder="Nom du client"></td>
+                </tr>
+                <tr>
+                    <td>Prénom:</td>
+                    <td><input type="text" id="prenom" placeholder="Prénom du client"></td>
+                </tr>
+                <tr>
+                    <td>Adresse principale:</td>
+                    <td><input type="text" id="adresse_principale" placeholder="Adresse"></td>
+                </tr>
+                <tr>
+                    <td>Code postal:</td>
+                    <td><input type="text" id="code_postal" placeholder="Code postal"></td>
+                    <td>Pays:</td>
+                    <td><input type="text" id="pays" placeholder="Pays"></td>
+                </tr>
+                <tr>
+                    <td>Tél fixe:</td>
+                    <td><input type="text" id="tel_fixe" placeholder="Téléphone fixe"></td>
+                    <td>Tél portable:</td>
+                    <td><input type="text" id="tel_portable" placeholder="Téléphone portable"></td>
+                </tr>
+                <tr>
+                    <td>Email:</td>
+                    <td><input type="email" id="email" placeholder="Email"></td>
+                </tr>
+            </table>
+            <button id="submit-client-btn">Soumettre</button>
+        </div>
+    </div>
+
+    <!-- Formulaire de modification de client (initialement caché) -->
+    <div id="edit-client-form" style="display: none;">
+        <button id="edit-back-btn" class="back-btn">← Retour</button>
+
+        <!-- Bouton pour afficher/cacher le formulaire des biens -->
+        <button id="openBiensForm" class="btn" style="float: right;">Ajouter des biens</button>
+
+        <h2>Modifier Client</h2>
+        <div class="client-form">
+            <table>
+                <tr>
+                    <td>Civilité:</td>
+                    <td><input type="text" id="edit-civilite" placeholder="M. / Mme"></td>
+                </tr>
+                <tr>
+                    <td>Nom:</td>
+                    <td><input type="text" id="edit-nom" placeholder="Nom du client"></td>
+                </tr>
+                <tr>
+                    <td>Prénom:</td>
+                    <td><input type="text" id="edit-prenom" placeholder="Prénom du client"></td>
+                </tr>
+                <tr>
+                    <td>Adresse principale:</td>
+                    <td><input type="text" id="edit-adresse_principale" placeholder="Adresse"></td>
+                </tr>
+                <tr>
+                    <td>Code postal:</td>
+                    <td><input type="text" id="edit-code_postal" placeholder="Code postal"></td>
+                    <td>Pays:</td>
+                    <td><input type="text" id="edit-pays" placeholder="Pays"></td>
+                </tr>
+                <tr>
+                    <td>Tél fixe:</td>
+                    <td><input type="text" id="edit-tel_fixe" placeholder="Téléphone fixe"></td>
+                    <td>Tél portable:</td>
+                    <td><input type="text" id="edit-tel_portable" placeholder="Téléphone portable"></td>
+                </tr>
+                <tr>
+                    <td>Email:</td>
+                    <td><input type="email" id="edit-email" placeholder="Email"></td>
+                </tr>
+            </table>
+            <button id="update-client-btn">Mettre à jour</button>
+            <button id="delete-client-btn">Supprimer</button> <!-- Bouton de suppression -->
+        </div>
+    </div>
+
+    <!-- Formulaire des biens (initialement caché) -->
+    <div id="biensForm" style="display:none;">
+        <h3>Caractéristiques du bien</h3>
+
+        <h4>Caractéristiques intérieures</h4>
+        <label for="nbrEtage">Nombre d'étages :</label>
+        <input type="number" id="nbrEtage" name="nbrEtage"><br>
+
+        <label for="surfaceMaison">Surface maison (m²) :</label>
+        <input type="number" id="surfaceMaison" name="surfaceMaison"><br>
+
+        <label for="nbrChambres">Nombre de chambres :</label>
+        <input type="number" id="nbrChambres" name="nbrChambres"><br>
+
+        <label for="nbrSalleBain">Nombre de salles de bain :</label>
+        <input type="number" id="nbrSalleBain" name="nbrSalleBain"><br>
+
+        <label for="nbrSalleEau">Nombre de salles d'eau :</label>
+        <input type="number" id="nbrSalleEau" name="nbrSalleEau"><br>
+
+        <label for="nbrSalon">Nombre de salons :</label>
+        <input type="number" id="nbrSalon" name="nbrSalon"><br>
+
+        <label for="codeAlarme">Code Alarme :</label>
+        <input type="text" id="codeAlarme" name="codeAlarme"><br>
+
+        <h4>Caractéristiques extérieures</h4>
+        <label for="surfaceJardin">Surface jardin (m²) :</label>
+        <input type="number" id="surfaceJardin" name="surfaceJardin"><br>
+
+        <label for="cloture">Clôture :</label>
+        <select id="cloture" name="cloture">
+            <option value="oui">Oui</option>
+            <option value="non">Non</option>
+        </select><br>
+
+        <label for="codePortail">Code Portail :</label>
+        <input type="text" id="codePortail" name="codePortail"><br>
+
+        <label for="piscineType">Piscine :</label>
+        <select id="piscineType" name="piscineType">
+            <option value="creusee">Creusée</option>
+            <option value="horsSol">Hors sol</option>
+        </select><br>
+
+        <label for="piscineLongueur">Longueur Piscine (m) :</label>
+        <input type="number" id="piscineLongueur" name="piscineLongueur"><br>
+
+        <label for="piscineLargeur">Largeur Piscine (m) :</label>
+        <input type="number" id="piscineLargeur" name="piscineLargeur"><br>
+
+        <label for="jacuzzi">Jacuzzi :</label>
+        <select id="jacuzzi" name="jacuzzi">
+            <option value="oui">Oui</option>
+            <option value="non">Non</option>
+        </select><br>
+
+        <label for="surfaceTerrasse">Surface Terrasse (m²) :</label>
+        <input type="number" id="surfaceTerrasse" name="surfaceTerrasse"><br>
+
+        <button type="submit" id="saveBiensBtn">Enregistrer le bien</button>
+    </div>
+</div>

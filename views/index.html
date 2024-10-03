@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="stylesindex.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Menu latéral -->
+        <div class="sidebar">
+            <ul>
+                <li><a href="#" id="home-link">Accueil</a></li>
+                <li><a href="#" id="client-link">Client</a></li>
+                <li><a href="#" id="biens-link">Biens</a></li>
+                <li><a href="#" id="contrat-link">Contrat</a></li>
+                <li><a href="#" id="agenda-link">Agenda</a></li>
+                <li><a href="#" id="parametres-link">Paramètres</a></li>
+                <li><a href="#" id="logout-btn">Déconnexion</a></li>
+            </ul>
+        </div>
+
+        <!-- Contenu principal du dashboard, le contenu sera chargé ici -->
+        <div class="main-content" id="content-area">
+            <h1>Bienvenue sur squirrel 🐿️</h1>
+            <p>Ceci est le début d'une aventure</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            function loadContent(url) {
+                const contentArea = document.getElementById('content-area');
+
+                // Appliquer l'animation fade-out avant de changer le contenu
+                contentArea.classList.add('fade-out');
+
+                // Attendre la fin de l'animation fade-out avant de charger le nouveau contenu
+                setTimeout(() => {
+                    fetch(url)
+                        .then(response => response.text())
+                        .then(html => {
+                            // Injecter le nouveau contenu
+                            contentArea.innerHTML = html;
+
+                            // Appliquer l'animation fade-in après le changement de contenu
+                            contentArea.classList.remove('fade-out');
+                            contentArea.classList.add('fade-in');
+                            
+                            // Si l'URL est pour la page clients, charger le fichier JS sécurisé
+                            if (url === '/client') {
+                                const script = document.createElement('script');
+                                script.src = '/secure-client.js';  // Charger le fichier JS sécurisé
+                                document.body.appendChild(script);
+                                script.onload = function() {
+                                    initializeClientPage();  // Appeler la fonction après le chargement du script
+                                };
+                            }
+                            
+                            // Si l'URL est pour la page agenda, charger le fichier JS sécurisé
+                            if (url === '/agenda') {
+                                const script = document.createElement('script');
+                                script.src = '/secure-agenda.js';  // Charger le fichier agenda.js
+                                document.body.appendChild(script);
+                                script.onerror = function() {
+                                    console.error('Erreur lors du chargement du script agenda.js');
+                                };
+                            }
+                        
+                        // Si l'URL est pour la page agenda, charger le fichier JS sécurisé
+                        if (url === '/accueil') {
+                                const script = document.createElement('script');
+                                script.src = '/secure-accueil.js';  // Charger le fichier agenda.js
+                                document.body.appendChild(script);
+                                script.onerror = function() {
+                                    console.error('Erreur lors du chargement du script agenda.js');
+                                };
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erreur lors du chargement du contenu:', error);
+                        });
+                }, 500); // Délai pour laisser le temps à l'animation fade-out de se terminer
+            }
+
+            // Charger la page d'accueil avec le message de bienvenue
+            document.getElementById('home-link').addEventListener('click', function (event) {
+                event.preventDefault();
+                const contentArea = document.getElementById('content-area');
+
+                // Appliquer l'animation fade-out
+                contentArea.classList.add('fade-out');
+
+                setTimeout(() => {
+                    // Charger le contenu de la page d'accueil
+                    contentArea.innerHTML = `
+                        <h1>Bienvenue sur squirrel 🐿️</h1>
+                        <p>Ceci est le début d'une aventure</p>
+                    `;
+                    // Appliquer l'animation fade-in après avoir changé le contenu
+                    contentArea.classList.remove('fade-out');
+                    contentArea.classList.add('fade-in');
+                }, 500);
+            });
+
+            // Event listeners pour chaque lien du menu
+            document.getElementById('client-link').addEventListener('click', function (event) {
+                event.preventDefault();
+                loadContent('/client');  // Charger dynamiquement la page client
+            });
+
+            document.getElementById('biens-link').addEventListener('click', function (event) {
+                event.preventDefault();
+                loadContent('/biens');  // Charger dynamiquement la page Biens
+            });
+
+            document.getElementById('contrat-link').addEventListener('click', function (event) {
+                event.preventDefault();
+                loadContent('/contrat');  // Charger dynamiquement la page Contrat
+            });
+
+            document.getElementById('agenda-link').addEventListener('click', function (event) {
+                event.preventDefault();
+                loadContent('/agenda');  // Charger dynamiquement la page Agenda
+            });
+
+            document.getElementById('parametres-link').addEventListener('click', function (event) {
+                event.preventDefault();
+                loadContent('/parametres');  // Charger dynamiquement la page Paramètres
+            });
+
+            // Gestion de la déconnexion
+            document.getElementById('logout-btn').addEventListener('click', function () {
+                fetch('/logout', { method: 'POST' })  // Appelle la route de déconnexion côté serveur
+                    .then(() => {
+                        window.location.href = '/login';  // Redirige vers la page de login
+                    });
+            });
+        });
+    </script>
+</body>
+</html>
