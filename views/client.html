@@ -60,7 +60,7 @@
         <button id="edit-back-btn" class="back-btn">← Retour</button>
 
         <!-- Bouton pour afficher/cacher le formulaire des biens -->
-        <button id="openBiensForm" class="btn" style="float: right;">Ajouter des biens</button>
+        <button id="openBiensForm" class="biens-btn" style="float: right; width: auto;">Ajouter des biens</button>
 
         <h2>Modifier Client</h2>
         <div class="client-form">
@@ -99,69 +99,72 @@
                 </tr>
             </table>
             <button id="update-client-btn">Mettre à jour</button>
-            <button id="delete-client-btn">Supprimer</button> <!-- Bouton de suppression -->
+            <button id="delete-client-btn">Supprimer</button>
         </div>
+    </div>
+
+    <!-- Liste des biens -->
+    <div id="biens-list" style="display: none;">
+        <!-- La liste des biens sera chargée ici -->
     </div>
 
     <!-- Formulaire des biens (initialement caché) -->
     <div id="biensForm" style="display:none;">
         <h3>Caractéristiques du bien</h3>
-
-        <h4>Caractéristiques intérieures</h4>
+        <!-- Formulaire pour modifier les biens -->
         <label for="nbrEtage">Nombre d'étages :</label>
-        <input type="number" id="nbrEtage" name="nbrEtage"><br>
+        <input type="number" id="nbrEtage"><br>
 
         <label for="surfaceMaison">Surface maison (m²) :</label>
-        <input type="number" id="surfaceMaison" name="surfaceMaison"><br>
+        <input type="number" id="surfaceMaison"><br>
 
         <label for="nbrChambres">Nombre de chambres :</label>
-        <input type="number" id="nbrChambres" name="nbrChambres"><br>
+        <input type="number" id="nbrChambres"><br>
 
         <label for="nbrSalleBain">Nombre de salles de bain :</label>
-        <input type="number" id="nbrSalleBain" name="nbrSalleBain"><br>
+        <input type="number" id="nbrSalleBain"><br>
 
         <label for="nbrSalleEau">Nombre de salles d'eau :</label>
-        <input type="number" id="nbrSalleEau" name="nbrSalleEau"><br>
+        <input type="number" id="nbrSalleEau"><br>
 
         <label for="nbrSalon">Nombre de salons :</label>
-        <input type="number" id="nbrSalon" name="nbrSalon"><br>
+        <input type="number" id="nbrSalon"><br>
 
         <label for="codeAlarme">Code Alarme :</label>
-        <input type="text" id="codeAlarme" name="codeAlarme"><br>
+        <input type="text" id="codeAlarme"><br>
 
-        <h4>Caractéristiques extérieures</h4>
         <label for="surfaceJardin">Surface jardin (m²) :</label>
-        <input type="number" id="surfaceJardin" name="surfaceJardin"><br>
+        <input type="number" id="surfaceJardin"><br>
 
         <label for="cloture">Clôture :</label>
-        <select id="cloture" name="cloture">
+        <select id="cloture">
             <option value="oui">Oui</option>
             <option value="non">Non</option>
         </select><br>
 
         <label for="codePortail">Code Portail :</label>
-        <input type="text" id="codePortail" name="codePortail"><br>
+        <input type="text" id="codePortail"><br>
 
-        <label for="piscineType">Piscine :</label>
-        <select id="piscineType" name="piscineType">
+        <label for="piscineType">Type de piscine :</label>
+        <select id="piscineType">
             <option value="creusee">Creusée</option>
             <option value="horsSol">Hors sol</option>
         </select><br>
 
         <label for="piscineLongueur">Longueur Piscine (m) :</label>
-        <input type="number" id="piscineLongueur" name="piscineLongueur"><br>
+        <input type="number" id="piscineLongueur"><br>
 
         <label for="piscineLargeur">Largeur Piscine (m) :</label>
-        <input type="number" id="piscineLargeur" name="piscineLargeur"><br>
+        <input type="number" id="piscineLargeur"><br>
 
         <label for="jacuzzi">Jacuzzi :</label>
-        <select id="jacuzzi" name="jacuzzi">
+        <select id="jacuzzi">
             <option value="oui">Oui</option>
             <option value="non">Non</option>
         </select><br>
 
         <label for="surfaceTerrasse">Surface Terrasse (m²) :</label>
-        <input type="number" id="surfaceTerrasse" name="surfaceTerrasse"><br>
+        <input type="number" id="surfaceTerrasse"><br>
 
         <button type="submit" id="saveBiensBtn">Enregistrer le bien</button>
     </div>

@@ -218,6 +218,22 @@ h1, h2 {
 .back-btn:hover {
     background-color: #3434d4;  /* Change la couleur lors du survol, comme 'Créer un client' */
 }
+.biens-btn {
+    background-color: #5151e5;  /* Même couleur de fond que le bouton 'Créer un client' */
+    color: white;  /* Même couleur de texte */
+    border: none;
+    padding: 10px 20px;  /* Même padding pour correspondre à 'Créer un client' */
+    border-radius: 5px;  /* Même bordure arrondie */
+    cursor: pointer;
+    font-size: 16px;  /* Même taille de police */
+    width: auto;  /* Ajuste la largeur automatiquement */
+    text-align: center;  /* Centre le texte */
+    margin-bottom: 20px;  /* Un espace sous le bouton */
+}
+
+.biens-btn:hover {
+    background-color: #3434d4;  /* Change la couleur lors du survol, comme 'Créer un client' */
+}
 /* Style de base pour le popup */
 .popup {
     position: fixed;
