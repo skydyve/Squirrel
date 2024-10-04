@@ -5,10 +5,18 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+const https = require('https'); // Ajouter https
+const fs = require('fs'); // Ajouter fs pour lire les certificats
 
 const app = express();
-const PORT = 3000;
+const PORT = 443; // Port HTTPS
 const JWT_SECRET = 'ojnfsdjbvisfnviusnkfjsnfisjdqmxkwovbuiergyuerhdfjscnxqcdvcjxwmosijfsi';
+
+// Charger les certificats (remplacez par vos fichiers de certificat)
+const httpsOptions = {
+    key: fs.readFileSync('/chemin/vers/votre/key.pem'), // Chemin vers la clé privée
+    cert: fs.readFileSync('/chemin/vers/votre/cert.pem') // Chemin vers le certificat
+};
 
 // Middleware pour parser le body des requêtes et les cookies
 app.use(bodyParser.json());
@@ -511,7 +519,7 @@ app.delete('/delete-bien/:id', authenticateToken, (req, res) => {
 
 
 
-// Lancement du serveur
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+// Lancement du serveur HTTPS
+https.createServer(httpsOptions, app).listen(PORT, () => {
+    console.log(`HTTPS Server running on https://squirrel.dynv6.net:${PORT}`);
 });
