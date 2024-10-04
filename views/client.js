@@ -276,8 +276,7 @@ document.getElementById('biens-back-btn').addEventListener('click', function () 
         });
     }
 
-    // Comportement du bouton pour afficher le formulaire des biens
-    // Comportement du bouton pour afficher le formulaire des biens
+// Comportement du bouton pour afficher le formulaire des biens
 document.getElementById('openBiensForm').addEventListener('click', function() {
     const biensForm = document.getElementById('biensForm');
     const editForm = document.getElementById('edit-client-form');
