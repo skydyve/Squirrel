@@ -1,7 +1,12 @@
 function initializeClientPage() {
     let currentClientId = null;  // Stocker l'ID du client en cours de modification
     let currentBienId = null;    // Stocker l'ID du bien en cours de modification
-
+    const searchBar = document.getElementById('search-bar');
+    if (searchBar) {
+        searchBar.addEventListener('keyup', function() {
+            searchClient();
+        });
+    }
     // Fonction pour charger la liste des clients
     function loadClients() {
         fetch('/get-clients')
@@ -327,6 +332,33 @@ document.getElementById('update-client-btn').addEventListener('click', async fun
                 });
             }
         });
+    }
+
+    function searchClient() {
+        const searchTerm = document.getElementById('search-bar').value;
+        fetch(`/search?term=${encodeURIComponent(searchTerm)}`)
+            .then(response => response.json())
+            .then(data => {
+                const clientList = document.getElementById('client-list');
+                clientList.innerHTML = '';  // Vider la liste des clients actuels
+    
+                if (data.length === 0) {
+                    clientList.innerHTML = '<p>Aucun client trouvé.</p>';
+                } else {
+                    data.forEach(client => {
+                        const button = document.createElement('button');
+                        button.textContent = `${client.nom} ${client.prenom} - ${client.email}`;
+                        button.className = 'client-btn';
+                        button.addEventListener('click', function () {
+                            loadClientDetails(client.id);  // Charger les détails du client sélectionné
+                        });
+                        clientList.appendChild(button);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Erreur lors de la recherche du client:', error);
+            });
     }
 
     loadClients();  // Charger la liste des clients lors de l'initialisation de la page
