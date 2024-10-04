@@ -470,6 +470,7 @@ h1, h2 {
 }
 
 /* Styles pour le formulaire des biens */
+/* Formulaire des biens */
 #biensForm {
     background-color: #f9f9f9;
     padding: 20px;
@@ -497,11 +498,16 @@ h1, h2 {
     font-size: 16px;
 }
 
-#biensForm input[type="number"]:focus,
-#biensForm input[type="text"]:focus,
-#biensForm select:focus {
-    border-color: #5151e5;
-    outline: none;
+#biensForm input[type="checkbox"],
+#biensForm input[type="radio"] {
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+#biensForm input[type="checkbox"] + label,
+#biensForm input[type="radio"] + label {
+    display: inline;
+    margin-right: 20px;
 }
 
 #biensForm button {
@@ -520,7 +526,6 @@ h1, h2 {
     background-color: #3434d4;
 }
 
-/* Bouton retour en cohérence avec le reste du site */
 #biensForm .back-btn {
     background-color: #5151e5;
     color: white;
@@ -537,4 +542,21 @@ h1, h2 {
 
 #biensForm .back-btn:hover {
     background-color: #3434d4;
+}
+
+/* Espacement et alignement des champs */
+td {
+    padding: 10px 0;
+    vertical-align: top;
+}
+
+td:first-child {
+    text-align: right;
+    padding-right: 10px;
+}
+
+td label {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 5px;
 }

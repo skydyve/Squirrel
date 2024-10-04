@@ -38,10 +38,12 @@ db.serialize(() => {
     db.run(`  
     CREATE TABLE IF NOT EXISTS biens (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        client_id INTEGER NOT NULL,  -- Lien avec la table clients
+        client_id INTEGER NOT NULL,  
         adresse TEXT,
         nom_bien TEXT,
         nom_proprietaire TEXT,
+        saisonnier BOOLEAN DEFAULT FALSE, 
+        annuel BOOLEAN DEFAULT FALSE, 
         nbr_etage INTEGER,
         surface_maison REAL,
         nbr_chambres INTEGER,
@@ -49,6 +51,10 @@ db.serialize(() => {
         nbr_salle_eau INTEGER,
         nbr_salon INTEGER,
         code_alarme TEXT,
+        cheminee BOOLEAN DEFAULT FALSE, 
+        radiateur BOOLEAN DEFAULT FALSE, 
+        fioul BOOLEAN DEFAULT FALSE, 
+        climatisation BOOLEAN DEFAULT FALSE, 
         surface_jardin REAL,
         cloture BOOLEAN,
         code_portail TEXT,
@@ -419,14 +425,32 @@ app.get('/get-bien/:id', authenticateToken, (req, res) => {
     });
 });
 app.post('/create-bien', authenticateToken, (req, res) => {
-    const { client_id, nom_bien, nbr_etage, surface_maison, nbr_chambres, nbr_salle_de_bain, nbr_salle_eau, nbr_salon, code_alarme, surface_jardin, cloture, code_portail, piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse } = req.body;
+    const { 
+        client_id, nom_bien, adresse, nom_proprietaire, saisonnier, annuel, 
+        nbr_etage, surface_maison, nbr_chambres, nbr_salle_de_bain, 
+        nbr_salle_eau, nbr_salon, code_alarme, cheminee, radiateur, fioul, 
+        climatisation, surface_jardin, cloture, code_portail, 
+        piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse 
+    } = req.body;
 
     const sql = `
-        INSERT INTO biens (client_id, nom_bien, nbr_etage, surface_maison, nbr_chambres, nbr_salle_de_bain, nbr_salle_eau, nbr_salon, code_alarme, surface_jardin, cloture, code_portail, piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO biens (
+            client_id, nom_bien, adresse, nom_proprietaire, saisonnier, annuel, 
+            nbr_etage, surface_maison, nbr_chambres, nbr_salle_de_bain, 
+            nbr_salle_eau, nbr_salon, code_alarme, cheminee, radiateur, fioul, 
+            climatisation, surface_jardin, cloture, code_portail, 
+            piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse
+        ) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
-    db.run(sql, [client_id, nom_bien, nbr_etage, surface_maison, nbr_chambres, nbr_salle_de_bain, nbr_salle_eau, nbr_salon, code_alarme, surface_jardin, cloture, code_portail, piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse], function (err) {
+    db.run(sql, [
+        client_id, nom_bien, adresse, nom_proprietaire, saisonnier, annuel, 
+        nbr_etage, surface_maison, nbr_chambres, nbr_salle_de_bain, 
+        nbr_salle_eau, nbr_salon, code_alarme, cheminee, radiateur, fioul, 
+        climatisation, surface_jardin, cloture, code_portail, 
+        piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse
+    ], function (err) {
         if (err) {
             res.status(500).json({ error: 'Erreur lors de la création du bien.' });
         } else {
@@ -437,15 +461,34 @@ app.post('/create-bien', authenticateToken, (req, res) => {
 
 app.put('/update-bien/:id', authenticateToken, (req, res) => {
     const bienId = req.params.id;
-    const { nom_bien, nbr_etage, surface_maison, nbr_chambres, nbr_salle_de_bain, nbr_salle_eau, nbr_salon, code_alarme, surface_jardin, cloture, code_portail, piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse } = req.body;
+    const { 
+        nom_bien, adresse, nom_proprietaire, saisonnier, annuel, 
+        nbr_etage, surface_maison, nbr_chambres, nbr_salle_de_bain, 
+        nbr_salle_eau, nbr_salon, code_alarme, cheminee, radiateur, fioul, 
+        climatisation, surface_jardin, cloture, code_portail, 
+        piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse 
+    } = req.body;
 
     const sql = `
-        UPDATE biens
-        SET nom_bien = ?, nbr_etage = ?, surface_maison = ?, nbr_chambres = ?, nbr_salle_de_bain = ?, nbr_salle_eau = ?, nbr_salon = ?, code_alarme = ?, surface_jardin = ?, cloture = ?, code_portail = ?, piscine_type = ?, piscine_longueur = ?, piscine_largeur = ?, jacuzzi = ?, surface_terrasse = ?
+        UPDATE biens 
+        SET 
+            nom_bien = ?, adresse = ?, nom_proprietaire = ?, saisonnier = ?, 
+            annuel = ?, nbr_etage = ?, surface_maison = ?, nbr_chambres = ?, 
+            nbr_salle_de_bain = ?, nbr_salle_eau = ?, nbr_salon = ?, 
+            code_alarme = ?, cheminee = ?, radiateur = ?, fioul = ?, 
+            climatisation = ?, surface_jardin = ?, cloture = ?, code_portail = ?, 
+            piscine_type = ?, piscine_longueur = ?, piscine_largeur = ?, 
+            jacuzzi = ?, surface_terrasse = ? 
         WHERE id = ?
     `;
 
-    db.run(sql, [nom_bien, nbr_etage, surface_maison, nbr_chambres, nbr_salle_de_bain, nbr_salle_eau, nbr_salon, code_alarme, surface_jardin, cloture, code_portail, piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse, bienId], function (err) {
+    db.run(sql, [
+        nom_bien, adresse, nom_proprietaire, saisonnier, annuel, 
+        nbr_etage, surface_maison, nbr_chambres, nbr_salle_de_bain, 
+        nbr_salle_eau, nbr_salon, code_alarme, cheminee, radiateur, fioul, 
+        climatisation, surface_jardin, cloture, code_portail, 
+        piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse, bienId
+    ], function (err) {
         if (err) {
             res.status(500).json({ error: 'Erreur lors de la mise à jour du bien.' });
         } else {
@@ -465,6 +508,8 @@ app.delete('/delete-bien/:id', authenticateToken, (req, res) => {
         res.json({ message: 'Bien supprimé avec succès.' });
     });
 });
+
+
 
 // Lancement du serveur
 app.listen(PORT, () => {

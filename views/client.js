@@ -150,6 +150,10 @@ document.getElementById('deleteBienBtn').addEventListener('click', async functio
             .then(bien => {
                 // Remplir le formulaire des biens avec les détails du bien sélectionné
                 document.getElementById('nomBien').value = bien.nom_bien || '';
+                document.getElementById('nomProprietaire').value = bien.nom_proprietaire || '';
+                document.getElementById('saisonnier').checked = bien.saisonnier || false;
+                document.getElementById('annuel').checked = bien.annuel || false;
+                document.getElementById('adresseBien').value = bien.adresse || '';
                 document.getElementById('nbrEtage').value = bien.nbr_etage || '';
                 document.getElementById('surfaceMaison').value = bien.surface_maison || '';
                 document.getElementById('nbrChambres').value = bien.nbr_chambres || '';
@@ -157,26 +161,34 @@ document.getElementById('deleteBienBtn').addEventListener('click', async functio
                 document.getElementById('nbrSalleEau').value = bien.nbr_salle_eau || '';
                 document.getElementById('nbrSalon').value = bien.nbr_salon || '';
                 document.getElementById('codeAlarme').value = bien.code_alarme || '';
+                document.getElementById('cheminee').checked = bien.cheminee || false;
+                document.getElementById('radiateur').checked = bien.radiateur || false;
+                document.getElementById('fioul').checked = bien.fioul || false;
+                document.getElementById('climatisation').checked = bien.climatisation || false;
                 document.getElementById('surfaceJardin').value = bien.surface_jardin || '';
-                document.getElementById('cloture').value = bien.cloture ? 'oui' : 'non';
+                document.querySelector(`input[name="cloture"][value="${bien.cloture ? 'oui' : 'non'}"]`).checked = true;
                 document.getElementById('codePortail').value = bien.code_portail || '';
                 document.getElementById('piscineType').value = bien.piscine_type || 'creusee';
                 document.getElementById('piscineLongueur').value = bien.piscine_longueur || '';
                 document.getElementById('piscineLargeur').value = bien.piscine_largeur || '';
-                document.getElementById('jacuzzi').value = bien.jacuzzi ? 'oui' : 'non';
+                document.querySelector(`input[name="jacuzzi"][value="${bien.jacuzzi ? 'oui' : 'non'}"]`).checked = true;
                 document.getElementById('surfaceTerrasse').value = bien.surface_terrasse || '';
-
+    
                 // Afficher le formulaire des biens
                 document.getElementById('biensForm').style.display = 'block';
             })
             .catch(error => console.error('Erreur lors du chargement des détails du bien:', error));
     }
-
-    // Soumission du formulaire des biens pour mise à jour ou création
+    
+    // Gestion de la soumission du formulaire des biens
     document.getElementById('saveBiensBtn').addEventListener('click', async function () {
         const data = {
             client_id: currentClientId,
-            nom_bien: document.getElementById('nomBien').value,  // Champ "Nom du bien"
+            nom_bien: document.getElementById('nomBien').value,
+            nom_proprietaire: document.getElementById('nomProprietaire').value,
+            saisonnier: document.getElementById('saisonnier').checked,
+            annuel: document.getElementById('annuel').checked,
+            adresse: document.getElementById('adresseBien').value,
             nbr_etage: document.getElementById('nbrEtage').value,
             surface_maison: document.getElementById('surfaceMaison').value,
             nbr_chambres: document.getElementById('nbrChambres').value,
@@ -184,13 +196,17 @@ document.getElementById('deleteBienBtn').addEventListener('click', async functio
             nbr_salle_eau: document.getElementById('nbrSalleEau').value,
             nbr_salon: document.getElementById('nbrSalon').value,
             code_alarme: document.getElementById('codeAlarme').value,
+            cheminee: document.getElementById('cheminee').checked,
+            radiateur: document.getElementById('radiateur').checked,
+            fioul: document.getElementById('fioul').checked,
+            climatisation: document.getElementById('climatisation').checked,
             surface_jardin: document.getElementById('surfaceJardin').value,
-            cloture: document.getElementById('cloture').value === 'oui',
+            cloture: document.querySelector('input[name="cloture"]:checked').value === 'oui',
             code_portail: document.getElementById('codePortail').value,
             piscine_type: document.getElementById('piscineType').value,
             piscine_longueur: document.getElementById('piscineLongueur').value,
             piscine_largeur: document.getElementById('piscineLargeur').value,
-            jacuzzi: document.getElementById('jacuzzi').value === 'oui',
+            jacuzzi: document.querySelector('input[name="jacuzzi"]:checked').value === 'oui',
             surface_terrasse: document.getElementById('surfaceTerrasse').value
         };
     
@@ -261,18 +277,50 @@ document.getElementById('biens-back-btn').addEventListener('click', function () 
     }
 
     // Comportement du bouton pour afficher le formulaire des biens
-    document.getElementById('openBiensForm').addEventListener('click', function() {
-        const biensForm = document.getElementById('biensForm');
-        const editForm = document.getElementById('edit-client-form');
-        
-        if (biensForm.style.display === 'none') {
-            biensForm.style.display = 'block';
-            editForm.style.display = 'none';
-        } else {
-            biensForm.style.display = 'none';
-            editForm.style.display = 'block';
-        }
-    });
+    // Comportement du bouton pour afficher le formulaire des biens
+document.getElementById('openBiensForm').addEventListener('click', function() {
+    const biensForm = document.getElementById('biensForm');
+    const editForm = document.getElementById('edit-client-form');
+    
+    // Réinitialiser tous les champs du formulaire des biens
+    document.getElementById('nomBien').value = '';
+    document.getElementById('nomProprietaire').value = '';  // Réinitialiser Nom Propriétaire
+    document.getElementById('adresseBien').value = '';  // Réinitialiser Adresse bien
+    document.getElementById('nbrEtage').value = '';
+    document.getElementById('surfaceMaison').value = '';
+    document.getElementById('nbrChambres').value = '';
+    document.getElementById('nbrSalleBain').value = '';
+    document.getElementById('nbrSalleEau').value = '';
+    document.getElementById('nbrSalon').value = '';
+    document.getElementById('codeAlarme').value = '';
+    document.getElementById('surfaceJardin').value = '';
+    document.querySelector('input[name="cloture"][value="non"]').checked = true; // Décocher Clôture par défaut
+    document.getElementById('codePortail').value = '';
+    document.getElementById('piscineType').value = 'creusee';
+    document.getElementById('piscineLongueur').value = '';
+    document.getElementById('piscineLargeur').value = '';
+    document.querySelector('input[name="jacuzzi"][value="non"]').checked = true; // Décocher Jacuzzi par défaut
+    document.getElementById('surfaceTerrasse').value = '';
+    
+    // Saisonnier/Annuel (checkbox)
+    document.getElementById('saisonnier').checked = false;
+    document.getElementById('annuel').checked = false;
+
+    // Cheminée, Climatisation, Radiateur (checkbox)
+    document.getElementById('cheminee').checked = false;
+    document.getElementById('climatisation').checked = false;
+    document.getElementById('radiateur').checked = false;
+    document.getElementById('fioul').checked = false;
+
+    // Afficher le formulaire des biens et masquer le formulaire client
+    if (biensForm.style.display === 'none') {
+        biensForm.style.display = 'block';
+        editForm.style.display = 'none';
+    } else {
+        biensForm.style.display = 'none';
+        editForm.style.display = 'block';
+    }
+});
     // Soumission du formulaire pour mettre à jour le client
 document.getElementById('update-client-btn').addEventListener('click', async function () {
     const updatedClient = {
