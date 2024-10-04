@@ -40,6 +40,7 @@ db.serialize(() => {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         client_id INTEGER NOT NULL,  -- Lien avec la table clients
         adresse TEXT,
+        nom_bien TEXT,
         nom_proprietaire TEXT,
         nbr_etage INTEGER,
         surface_maison REAL,
@@ -300,20 +301,21 @@ app.delete('/delete-client/:id', authenticateToken, (req, res) => {
 
 app.put('/update-client/:id', authenticateToken, (req, res) => {
     const clientId = req.params.id;
-    const updatedClient = req.body;
+    const { sexe, nom, prenom, adresse_principale, code_postal, pays, tel_fixe, tel_portable, email } = req.body;
 
-    // Logique pour mettre à jour le client dans la base de données
-    // Exemple :
-    db.run(`UPDATE clients SET civilite = ?, nom = ?, prenom = ?, adresse_principale = ?, code_postal = ?, pays = ?, tel_fixe = ?, tel_portable = ?, email = ? WHERE id = ?`,
-        [updatedClient.civilite, updatedClient.nom, updatedClient.prenom, updatedClient.adresse_principale, updatedClient.code_postal, updatedClient.pays, updatedClient.tel_fixe, updatedClient.tel_portable, updatedClient.email, clientId],
-        function (err) {
-            if (err) {
-                res.status(500).json({ error: 'Erreur lors de la mise à jour du client.' });
-            } else {
-                res.json({ message: 'Client mis à jour avec succès.' });
-            }
+    const sql = `
+        UPDATE clients
+        SET sexe = ?, nom = ?, prenom = ?, adresse_principale = ?, code_postal = ?, pays = ?, tel_fixe = ?, tel_portable = ?, email = ?
+        WHERE id = ?
+    `;
+
+    db.run(sql, [sexe, nom, prenom, adresse_principale, code_postal, pays, tel_fixe, tel_portable, email, clientId], function (err) {
+        if (err) {
+            res.status(500).json({ error: 'Erreur lors de la mise à jour du client.' });
+        } else {
+            res.json({ message: 'Client mis à jour avec succès.' });
         }
-    );
+    });
 });
 
 
@@ -417,21 +419,38 @@ app.get('/get-bien/:id', authenticateToken, (req, res) => {
     });
 });
 app.post('/create-bien', authenticateToken, (req, res) => {
-    const { client_id, nbr_etage, surface_maison, nbr_chambres, nbr_salle_de_bain, nbr_salle_eau, nbr_salon, code_alarme,
-            surface_jardin, cloture, code_portail, piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse } = req.body;
+    const { client_id, nom_bien, nbr_etage, surface_maison, nbr_chambres, nbr_salle_de_bain, nbr_salle_eau, nbr_salon, code_alarme, surface_jardin, cloture, code_portail, piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse } = req.body;
 
-    const sql = `INSERT INTO biens (client_id, nbr_etage, surface_maison, nbr_chambres, nbr_salle_de_bain, nbr_salle_eau, 
-                  nbr_salon, code_alarme, surface_jardin, cloture, code_portail, piscine_type, piscine_longueur, piscine_largeur, 
-                  jacuzzi, surface_terrasse) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    const sql = `
+        INSERT INTO biens (client_id, nom_bien, nbr_etage, surface_maison, nbr_chambres, nbr_salle_de_bain, nbr_salle_eau, nbr_salon, code_alarme, surface_jardin, cloture, code_portail, piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
 
-    db.run(sql, [client_id, nbr_etage, surface_maison, nbr_chambres, nbr_salle_de_bain, nbr_salle_eau, nbr_salon, code_alarme,
-                 surface_jardin, cloture, code_portail, piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse], 
-    function(err) {
+    db.run(sql, [client_id, nom_bien, nbr_etage, surface_maison, nbr_chambres, nbr_salle_de_bain, nbr_salle_eau, nbr_salon, code_alarme, surface_jardin, cloture, code_portail, piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse], function (err) {
         if (err) {
-            return res.status(500).json({ message: 'Erreur lors de la création du bien.' });
+            res.status(500).json({ error: 'Erreur lors de la création du bien.' });
+        } else {
+            res.json({ message: 'Bien créé avec succès.', id: this.lastID });
         }
-        res.status(200).json({ message: 'Bien créé avec succès.' });
+    });
+});
+
+app.put('/update-bien/:id', authenticateToken, (req, res) => {
+    const bienId = req.params.id;
+    const { nom_bien, nbr_etage, surface_maison, nbr_chambres, nbr_salle_de_bain, nbr_salle_eau, nbr_salon, code_alarme, surface_jardin, cloture, code_portail, piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse } = req.body;
+
+    const sql = `
+        UPDATE biens
+        SET nom_bien = ?, nbr_etage = ?, surface_maison = ?, nbr_chambres = ?, nbr_salle_de_bain = ?, nbr_salle_eau = ?, nbr_salon = ?, code_alarme = ?, surface_jardin = ?, cloture = ?, code_portail = ?, piscine_type = ?, piscine_longueur = ?, piscine_largeur = ?, jacuzzi = ?, surface_terrasse = ?
+        WHERE id = ?
+    `;
+
+    db.run(sql, [nom_bien, nbr_etage, surface_maison, nbr_chambres, nbr_salle_de_bain, nbr_salle_eau, nbr_salon, code_alarme, surface_jardin, cloture, code_portail, piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse, bienId], function (err) {
+        if (err) {
+            res.status(500).json({ error: 'Erreur lors de la mise à jour du bien.' });
+        } else {
+            res.json({ message: 'Bien mis à jour avec succès.' });
+        }
     });
 });
 

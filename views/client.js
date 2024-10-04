@@ -144,6 +144,7 @@ document.getElementById('deleteBienBtn').addEventListener('click', async functio
             .then(response => response.json())
             .then(bien => {
                 // Remplir le formulaire des biens avec les détails du bien sélectionné
+                document.getElementById('nomBien').value = bien.nom_bien || '';
                 document.getElementById('nbrEtage').value = bien.nbr_etage || '';
                 document.getElementById('surfaceMaison').value = bien.surface_maison || '';
                 document.getElementById('nbrChambres').value = bien.nbr_chambres || '';
@@ -170,6 +171,7 @@ document.getElementById('deleteBienBtn').addEventListener('click', async functio
     document.getElementById('saveBiensBtn').addEventListener('click', async function () {
         const data = {
             client_id: currentClientId,
+            nom_bien: document.getElementById('nomBien').value,  // Champ "Nom du bien"
             nbr_etage: document.getElementById('nbrEtage').value,
             surface_maison: document.getElementById('surfaceMaison').value,
             nbr_chambres: document.getElementById('nbrChambres').value,
@@ -186,17 +188,17 @@ document.getElementById('deleteBienBtn').addEventListener('click', async functio
             jacuzzi: document.getElementById('jacuzzi').value === 'oui',
             surface_terrasse: document.getElementById('surfaceTerrasse').value
         };
-
+    
         try {
             const method = currentBienId ? 'PUT' : 'POST';
             const url = currentBienId ? `/update-bien/${currentBienId}` : '/create-bien';
-
+    
             const response = await fetch(url, {
                 method,
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             });
-
+    
             if (response.ok) {
                 alert('Bien enregistré avec succès');
                 loadClientBiens(currentClientId);  // Recharger la liste des biens
