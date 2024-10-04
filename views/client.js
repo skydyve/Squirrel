@@ -33,74 +33,47 @@ function initializeClientPage() {
             });
     }
 
-    function loadClientDetails(clientId) {
-        currentClientId = clientId;  // Stocker l'ID du client en cours
-        fetch(`/get-client/${clientId}`)
-            .then(response => response.json())
-            .then(client => {
-                const editForm = document.getElementById('edit-client-form');
-                const clientList = document.getElementById('client-list');
-                const createForm = document.getElementById('create-client-form');
-                const biensList = document.getElementById('biens-list');
-    
-                // Masquer la liste des clients et le formulaire de création
-                if (clientList) clientList.style.display = 'none';
-                if (createForm) createForm.style.display = 'none';
-                if (editForm) editForm.style.display = 'block';  // Afficher le formulaire client
-    
-                // Remplir le formulaire client
-                document.getElementById('edit-civilite').value = client.civilite || '';
-                document.getElementById('edit-nom').value = client.nom || '';
-                document.getElementById('edit-prenom').value = client.prenom || '';
-                document.getElementById('edit-adresse_principale').value = client.adresse_principale || '';
-                document.getElementById('edit-code_postal').value = client.code_postal || '';
-                document.getElementById('edit-pays').value = client.pays || '';
-                document.getElementById('edit-tel_fixe').value = client.tel_fixe || '';
-                document.getElementById('edit-tel_portable').value = client.tel_portable || '';
-                document.getElementById('edit-email').value = client.email || '';
-                const editBackBtn = document.getElementById('edit-back-btn');
+    // Masquer la liste des biens lorsque le formulaire client est visible
+function loadClientDetails(clientId) {
+    currentClientId = clientId;  // Stocker l'ID du client en cours
+    fetch(`/get-client/${clientId}`)
+        .then(response => response.json())
+        .then(client => {
+            const editForm = document.getElementById('edit-client-form');
+            const clientList = document.getElementById('client-list');
+            const createForm = document.getElementById('create-client-form');
+            const biensList = document.getElementById('biens-list');  // Assurez-vous que la liste des biens soit masquée
+            const updateClientBtn = document.getElementById('update-client-btn');
+            const deleteClientBtn = document.getElementById('delete-client-btn');
 
-                const backButton = document.getElementById('create-back-btn');
-                if (backButton) {
-                    backButton.addEventListener('click', function () {
-                        const clientList = document.getElementById('client-list');
-                        const createForm = document.getElementById('create-client-form');
-                        const editForm = document.getElementById('edit-client-form');
-                        const biensList = document.getElementById('biens-list');
+            // Masquer la liste des clients et le formulaire de création
+            if (clientList) clientList.style.display = 'none';
+            if (createForm) createForm.style.display = 'none';
+            if (editForm) editForm.style.display = 'block';  // Afficher le formulaire client
+            if (updateClientBtn) updateClientBtn.style.display = 'block';
+            if (deleteClientBtn) deleteClientBtn.style.display = 'block';
 
-                        // Masquer la liste des biens
-                        if (biensList) biensList.style.display = 'none';
+            // Masquer la liste des biens par défaut
+            if (biensList) biensList.style.display = 'none';
 
-                        // Masquer le formulaire de création et afficher la liste des clients
-                        if (createForm) createForm.style.display = 'none';
-                        if (editForm) createForm.style.display = 'none';
-                        if (clientList) clientList.style.display = 'block';
-                    });
-                }
-                
+            // Remplir le formulaire client avec les détails
+            document.getElementById('edit-civilite').value = client.civilite || '';
+            document.getElementById('edit-nom').value = client.nom || '';
+            document.getElementById('edit-prenom').value = client.prenom || '';
+            document.getElementById('edit-adresse_principale').value = client.adresse_principale || '';
+            document.getElementById('edit-code_postal').value = client.code_postal || '';
+            document.getElementById('edit-pays').value = client.pays || '';
+            document.getElementById('edit-tel_fixe').value = client.tel_fixe || '';
+            document.getElementById('edit-tel_portable').value = client.tel_portable || '';
+            document.getElementById('edit-email').value = client.email || '';
 
-                if (editBackBtn) {
-                    editBackBtn.addEventListener('click', function () {
-                        document.getElementById('edit-client-form').style.display = 'none';
-                        document.getElementById('client-list').style.display = 'block';
-                        
-                        // Masquer la liste des biens lorsque vous revenez à la liste des clients
-                        const biensList = document.getElementById('biens-list');
-                        if (biensList) {
-                            biensList.style.display = 'none';
-                        }
-                    });
-                }
-                // Charger les biens du client
-                loadClientBiens(clientId);
-    
-                // Afficher la liste des biens après la sélection d'un client
-                if (biensList) biensList.style.display = 'block';
-            })
-            .catch(error => {
-                console.error('Erreur lors du chargement des détails du client:', error);
-            });
-    }
+            // Charger les biens du client (cette fonction peut rester si elle est utile pour d'autres actions)
+            loadClientBiens(clientId);
+        })
+        .catch(error => {
+            console.error('Erreur lors du chargement des détails du client:', error);
+        });
+}
 
 
     // Fonction pour charger la liste des biens d'un client
@@ -127,14 +100,14 @@ function initializeClientPage() {
             })
             .catch(error => console.error('Erreur lors du chargement des biens du client:', error));
     }
-                // Ajouter un événement pour le bouton "Liste des biens"
+            // Gestion du bouton "Liste des biens"
             document.getElementById('showBiensList').addEventListener('click', function () {
                 const clientForm = document.getElementById('edit-client-form');
                 const biensList = document.getElementById('biens-list');
                 const updateClientBtn = document.getElementById('update-client-btn');
                 const deleteClientBtn = document.getElementById('delete-client-btn');
-
-                // Masquer le formulaire client et les boutons de modification client
+                
+                // Masquer le formulaire client et les boutons "Mettre à jour" et "Supprimer"
                 if (clientForm) clientForm.style.display = 'none';
                 if (updateClientBtn) updateClientBtn.style.display = 'none';
                 if (deleteClientBtn) deleteClientBtn.style.display = 'none';
@@ -248,16 +221,24 @@ document.getElementById('deleteBienBtn').addEventListener('click', async functio
         });
     }
 
-    // Ajouter un bouton "Retour" au formulaire des biens
-    const biensBackBtn = document.createElement('button');
-    biensBackBtn.textContent = '← Retour';
-    biensBackBtn.className = 'back-btn';
-    biensBackBtn.addEventListener('click', function () {
-        document.getElementById('biensForm').style.display = 'none';
-        document.getElementById('edit-client-form').style.display = 'block';
-    });
-    document.getElementById('biensForm').appendChild(biensBackBtn);
+document.getElementById('biens-back-btn').addEventListener('click', function () {
+    const biensForm = document.getElementById('biensForm');
+    const biensList = document.getElementById('biens-list');  
+    const clientForm = document.getElementById('edit-client-form');
+    const updateClientBtn = document.getElementById('update-client-btn');
+    const deleteClientBtn = document.getElementById('delete-client-btn');
 
+    // Masquer le formulaire des biens et la liste des biens
+    if (biensForm) biensForm.style.display = 'none';
+    if (biensList) biensList.style.display = 'none';
+
+    // Réafficher le formulaire client
+    if (clientForm) clientForm.style.display = 'block';
+
+    // Réafficher les boutons "Mettre à jour" et "Supprimer"
+    if (updateClientBtn) updateClientBtn.style.display = 'block';
+    if (deleteClientBtn) deleteClientBtn.style.display = 'block';
+});
     // Événement pour le bouton "Retour" sur la page de création
     const backButton = document.getElementById('create-back-btn');
     if (backButton) {
