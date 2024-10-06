@@ -1,10 +1,12 @@
 function initializeClientPage() {
-    let currentClientId = null;  // Stocker l'ID du client en cours de modification
-    let currentBienId = null;    // Stocker l'ID du bien en cours de modification
+    let currentClientId = null;
+    let currentBienId = null;
+    
     const createClientBtn = document.getElementById('create-client-btn');
     const createClientForm = document.getElementById('create-client-form');
     const clientList = document.getElementById('client-list');
-
+    
+    // Afficher le formulaire de création lorsque le bouton "Créer un client" est cliqué
     if (createClientBtn) {
         createClientBtn.addEventListener('click', function () {
             if (clientList) clientList.style.display = 'none';
@@ -12,6 +14,7 @@ function initializeClientPage() {
         });
     }
 
+    // Gestion du bouton retour dans le formulaire de création
     const createBackBtn = document.getElementById('create-back-btn');
     if (createBackBtn) {
         createBackBtn.addEventListener('click', function () {
@@ -19,6 +22,16 @@ function initializeClientPage() {
             if (createClientForm) createClientForm.style.display = 'none';
         });
     }
+
+    // **Ajout du gestionnaire d'événements pour soumettre le formulaire de création de client**
+    const submitClientBtn = document.getElementById('submit-client-btn'); // Ajoutez un id au bouton "Soumettre" dans votre formulaire HTML
+    if (submitClientBtn) {
+        submitClientBtn.addEventListener('click', function (event) {
+            event.preventDefault();
+            createClient();
+        });
+    }
+
     function createClient() {
         // Récupérer les données du formulaire de création de client
         const clientData = {
@@ -32,13 +45,13 @@ function initializeClientPage() {
             tel_portable: document.getElementById('tel_portable').value,
             email: document.getElementById('email').value
         };
-    
+
         // Validation des champs si nécessaire
         if (!clientData.nom || !clientData.prenom || !clientData.email) {
             alert('Veuillez remplir les champs obligatoires.');
             return;
         }
-    
+
         // Envoyer les données au serveur pour créer le client
         fetch('/create-client', {
             method: 'POST',
@@ -58,6 +71,8 @@ function initializeClientPage() {
             alert('Client créé avec succès');
             loadClients();  // Recharger la liste des clients
             document.getElementById('create-client-form').reset();  // Réinitialiser le formulaire
+            document.getElementById('create-client-form').style.display = 'none';  // Cacher le formulaire de création
+            clientList.style.display = 'block';  // Réafficher la liste des clients
         })
         .catch(error => {
             console.error('Erreur:', error);
