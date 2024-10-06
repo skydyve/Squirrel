@@ -5,10 +5,18 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+const https = require('https'); // Ajouter https
+const fs = require('fs'); // Ajouter fs pour lire les certificats
 
 const app = express();
-const PORT = 3000;
+const PORT = 443; // Port HTTPS
 const JWT_SECRET = 'ojnfsdjbvisfnviusnkfjsnfisjdqmxkwovbuiergyuerhdfjscnxqcdvcjxwmosijfsi';
+
+// Charger les certificats (remplacez par vos fichiers de certificat)
+const httpsOptions = {
+    key: fs.readFileSync('key.pem'), // Chemin vers la clé privée
+    cert: fs.readFileSync('cert.pem') // Chemin vers le certificat
+};
 
 // Middleware pour parser le body des requêtes et les cookies
 app.use(bodyParser.json());
@@ -115,22 +123,23 @@ function checkIfUserExists(req, res, next) {
     });
 }
 
-// Middleware pour vérifier le token JWT
 function authenticateToken(req, res, next) {
     const token = req.cookies.token;
-    
-    // Si aucun token n'est trouvé, rediriger vers la page de login
+    console.log('Vérification du token:', token); // Ajoutez ceci pour voir si le token est bien transmis
+
     if (!token) {
-        return res.redirect('/login');  
+        console.log('Token non trouvé, redirection vers /login');
+        return res.redirect('/login');
     }
 
-    // Vérification du token
     jwt.verify(token, JWT_SECRET, (err, user) => {
         if (err) {
-            return res.redirect('/login');  // Si le token est invalide, rediriger vers login
+            console.log('Erreur lors de la vérification du token:', err);
+            return res.redirect('/login'); // Rediriger si le token est invalide
         }
-        req.user = user;  // Stocke les informations de l'utilisateur dans l'objet req
-        next();  // Continue si le token est valide
+        req.user = user;  // Stocker l'utilisateur dans req
+        console.log('Token vérifié, utilisateur:', user);
+        next(); // Continuer si le token est valide
     });
 }
 
@@ -173,13 +182,27 @@ app.post('/login', (req, res) => {
     const { username, password } = req.body;
 
     db.get("SELECT * FROM users WHERE username = ?", [username], async (err, row) => {
+        if (err) {
+            return res.status(500).send("Erreur lors de la vérification de l'utilisateur.");
+        }
+
         if (!row || !(await bcrypt.compare(password, row.password))) {
             return res.status(401).send("Nom d'utilisateur ou mot de passe incorrect.");
         }
 
+        // Générer le token JWT ici
         const token = jwt.sign({ username: row.username }, JWT_SECRET, { expiresIn: '1h' });
-        res.cookie('token', token, { httpOnly: true, secure: true, path: '/', sameSite: 'Strict' });
-        res.redirect('/index'); // Redirige vers la page d'index après login
+
+        // Utiliser le token pour définir le cookie
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: true,
+            path: '/',
+            sameSite: 'Strict'
+        });
+
+        // Rediriger l'utilisateur vers l'index
+        res.redirect('/index');
     });
 });
 
@@ -511,7 +534,7 @@ app.delete('/delete-bien/:id', authenticateToken, (req, res) => {
 
 
 
-// Lancement du serveur
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+// Lancement du serveur HTTPS
+https.createServer(httpsOptions, app).listen(PORT, () => {
+    console.log(`HTTPS Server running on https://squirrel.dynv6.net:${PORT}`);
 });
