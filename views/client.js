@@ -1,10 +1,66 @@
 function initializeClientPage() {
     let currentClientId = null;  // Stocker l'ID du client en cours de modification
     let currentBienId = null;    // Stocker l'ID du bien en cours de modification
-    const searchBar = document.getElementById('search-bar');
-    if (searchBar) {
-        searchBar.addEventListener('keyup', function() {
-            searchClient();
+    const createClientBtn = document.getElementById('create-client-btn');
+    const createClientForm = document.getElementById('create-client-form');
+    const clientList = document.getElementById('client-list');
+
+    if (createClientBtn) {
+        createClientBtn.addEventListener('click', function () {
+            if (clientList) clientList.style.display = 'none';
+            if (createClientForm) createClientForm.style.display = 'block';
+        });
+    }
+
+    const createBackBtn = document.getElementById('create-back-btn');
+    if (createBackBtn) {
+        createBackBtn.addEventListener('click', function () {
+            if (clientList) clientList.style.display = 'block';
+            if (createClientForm) createClientForm.style.display = 'none';
+        });
+    }
+    function createClient() {
+        // Récupérer les données du formulaire de création de client
+        const clientData = {
+            civilite: document.getElementById('civilite').value,
+            nom: document.getElementById('nom').value,
+            prenom: document.getElementById('prenom').value,
+            adresse_principale: document.getElementById('adresse_principale').value,
+            code_postal: document.getElementById('code_postal').value,
+            pays: document.getElementById('pays').value,
+            tel_fixe: document.getElementById('tel_fixe').value,
+            tel_portable: document.getElementById('tel_portable').value,
+            email: document.getElementById('email').value
+        };
+    
+        // Validation des champs si nécessaire
+        if (!clientData.nom || !clientData.prenom || !clientData.email) {
+            alert('Veuillez remplir les champs obligatoires.');
+            return;
+        }
+    
+        // Envoyer les données au serveur pour créer le client
+        fetch('/create-client', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(clientData)
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Erreur lors de la création du client');
+            }
+        })
+        .then(data => {
+            alert('Client créé avec succès');
+            loadClients();  // Recharger la liste des clients
+            document.getElementById('create-client-form').reset();  // Réinitialiser le formulaire
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
         });
     }
     // Fonction pour charger la liste des clients

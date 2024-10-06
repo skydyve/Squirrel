@@ -29,114 +29,91 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            function loadContent(url) {
-                const contentArea = document.getElementById('content-area');
+        function loadContent(url) {
+        const contentArea = document.getElementById('content-area');
 
-                // Appliquer l'animation fade-out avant de changer le contenu
-                contentArea.classList.add('fade-out');
+        // Appliquer l'animation fade-out avant de changer le contenu
+        contentArea.classList.add('fade-out');
 
-                // Attendre la fin de l'animation fade-out avant de charger le nouveau contenu
-                setTimeout(() => {
-                    fetch(url)
-                        .then(response => response.text())
-                        .then(html => {
-                            // Injecter le nouveau contenu
-                            contentArea.innerHTML = html;
+        // Attendre la fin de l'animation fade-out avant de charger le nouveau contenu
+        setTimeout(() => {
+            fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    // Injecter le nouveau contenu
+                    contentArea.innerHTML = html;
 
-                            // Appliquer l'animation fade-in après le changement de contenu
-                            contentArea.classList.remove('fade-out');
-                            contentArea.classList.add('fade-in');
-                            
-                            // Si l'URL est pour la page clients, charger le fichier JS sécurisé
-                            if (url === '/client') {
-                                const script = document.createElement('script');
-                                script.src = '/secure-client.js';  // Charger le fichier JS sécurisé
-                                document.body.appendChild(script);
-                                script.onload = function() {
-                                    initializeClientPage();  // Appeler la fonction après le chargement du script
-                                };
-                            }
-                            
-                            // Si l'URL est pour la page agenda, charger le fichier JS sécurisé
-                            if (url === '/agenda') {
-                                const script = document.createElement('script');
-                                script.src = '/secure-agenda.js';  // Charger le fichier agenda.js
-                                document.body.appendChild(script);
-                                script.onerror = function() {
-                                    console.error('Erreur lors du chargement du script agenda.js');
-                                };
-                            }
-                        
-                        // Si l'URL est pour la page agenda, charger le fichier JS sécurisé
-                        if (url === '/accueil') {
-                                const script = document.createElement('script');
-                                script.src = '/secure-accueil.js';  // Charger le fichier agenda.js
-                                document.body.appendChild(script);
-                                script.onerror = function() {
-                                    console.error('Erreur lors du chargement du script agenda.js');
-                                };
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Erreur lors du chargement du contenu:', error);
-                        });
-                }, 500); // Délai pour laisser le temps à l'animation fade-out de se terminer
-            }
-
-            // Charger la page d'accueil avec le message de bienvenue
-            document.getElementById('home-link').addEventListener('click', function (event) {
-                event.preventDefault();
-                const contentArea = document.getElementById('content-area');
-
-                // Appliquer l'animation fade-out
-                contentArea.classList.add('fade-out');
-
-                setTimeout(() => {
-                    // Charger le contenu de la page d'accueil
-                    contentArea.innerHTML = `
-                        <h1>Bienvenue sur squirrel 🐿️</h1>
-                        <p>Ceci est le début d'une aventure</p>
-                    `;
-                    // Appliquer l'animation fade-in après avoir changé le contenu
+                    // Appliquer l'animation fade-in après le changement de contenu
                     contentArea.classList.remove('fade-out');
                     contentArea.classList.add('fade-in');
-                }, 500);
-            });
 
-            // Event listeners pour chaque lien du menu
-            document.getElementById('client-link').addEventListener('click', function (event) {
-                event.preventDefault();
-                loadContent('/client');  // Charger dynamiquement la page client
-            });
+                    // Gestion des scripts dynamiques selon l'URL
+                    switch (url) {
+                        case '/client':
+                            loadScript('/secure-client.js', 'initializeClientPage');
+                            break;
+                        case '/agenda':
+                            loadScript('/secure-agenda.js');
+                            break;
+                        case '/accueil':
+                            loadScript('/secure-accueil.js');
+                            break;
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur lors du chargement du contenu:', error);
+                });
+        }, 500); // Délai pour laisser le temps à l'animation fade-out de se terminer
+    }
 
-            document.getElementById('biens-link').addEventListener('click', function (event) {
-                event.preventDefault();
-                loadContent('/biens');  // Charger dynamiquement la page Biens
-            });
+    function loadScript(src, callback) {
+        const script = document.createElement('script');
+        script.src = src;
+        script.onload = () => {
+            if (callback) {
+                window[callback]();  // Appel de la fonction de rappel si définie
+            }
+        };
+        script.onerror = () => {
+            console.error(`Erreur lors du chargement du script ${src}`);
+        };
+        document.body.appendChild(script);
+    }
 
-            document.getElementById('contrat-link').addEventListener('click', function (event) {
-                event.preventDefault();
-                loadContent('/contrat');  // Charger dynamiquement la page Contrat
-            });
+    // Event listeners pour chaque lien du menu
+    document.getElementById('home-link').addEventListener('click', function (event) {
+        event.preventDefault();
+        loadContent('/accueil');  // Charger dynamiquement la page d'accueil
+    });
 
-            document.getElementById('agenda-link').addEventListener('click', function (event) {
-                event.preventDefault();
-                loadContent('/agenda');  // Charger dynamiquement la page Agenda
-            });
+    document.getElementById('client-link').addEventListener('click', function (event) {
+        event.preventDefault();
+        loadContent('/client');  // Charger dynamiquement la page client
+    });
 
-            document.getElementById('parametres-link').addEventListener('click', function (event) {
-                event.preventDefault();
-                loadContent('/parametres');  // Charger dynamiquement la page Paramètres
-            });
+    document.getElementById('biens-link').addEventListener('click', function (event) {
+        event.preventDefault();
+        loadContent('/biens');  // Charger dynamiquement la page biens
+    });
 
-            // Gestion de la déconnexion
-            document.getElementById('logout-btn').addEventListener('click', function () {
-                fetch('/logout', { method: 'POST' })  // Appelle la route de déconnexion côté serveur
-                    .then(() => {
-                        window.location.href = '/login';  // Redirige vers la page de login
-                    });
+    document.getElementById('agenda-link').addEventListener('click', function (event) {
+        event.preventDefault();
+        loadContent('/agenda');  // Charger dynamiquement la page agenda
+    });
+
+    document.getElementById('parametres-link').addEventListener('click', function (event) {
+        event.preventDefault();
+        loadContent('/parametres');  // Charger dynamiquement la page paramètres
+    });
+
+    // Gestion de la déconnexion
+    document.getElementById('logout-btn').addEventListener('click', function () {
+        fetch('/logout', { method: 'POST' })  // Appelle la route de déconnexion côté serveur
+            .then(() => {
+                window.location.href = '/login';  // Redirige vers la page de login
             });
-        });
+    });
+});
     </script>
 </body>
 </html>

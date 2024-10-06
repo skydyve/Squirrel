@@ -30,7 +30,10 @@
 // Charger les événements depuis la base de données
 async function loadEvents() {
     try {
-        const response = await fetch('/get-appointments');
+        const response = await fetch('/get-appointments', {
+            method: 'GET',
+            credentials: 'include'  // Ajoutez cette ligne pour inclure les cookies JWT
+        });
         if (!response.ok) {
             throw new Error('Erreur lors du chargement des événements');
         }
