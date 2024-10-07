@@ -24,7 +24,7 @@ function initializeClientPage() {
     }
 
     // **Ajout du gestionnaire d'événements pour soumettre le formulaire de création de client**
-    const submitClientBtn = document.getElementById('submit-client-btn');
+    const submitClientBtn = document.getElementById('submit-client-btn'); // Ajoutez un id au bouton "Soumettre" dans votre formulaire HTML
     if (submitClientBtn) {
         submitClientBtn.addEventListener('click', function (event) {
             event.preventDefault();
@@ -69,28 +69,13 @@ function initializeClientPage() {
         })
         .then(data => {
             alert('Client créé avec succès');
-            // Réinitialiser le formulaire et revenir à la page liste des clients
-            document.getElementById('create-client-form').reset();
-            document.getElementById('create-client-form').style.display = 'none';  // Masquer le formulaire de création
-            clientList.style.display = 'block';  // Réafficher la liste des clients
             loadClients();  // Recharger la liste des clients
+            document.getElementById('create-client-form').reset();  // Réinitialiser le formulaire
+            document.getElementById('create-client-form').style.display = 'none';  // Cacher le formulaire de création
+            clientList.style.display = 'block';  // Réafficher la liste des clients
         })
         .catch(error => {
             console.error('Erreur:', error);
-        });
-    }
-
-    // **Ajouter un comportement "Retour" global pour les différents menus**
-    function setupBackButtons() {
-        const backButtons = document.querySelectorAll('.back-btn');  // Suppose que tous les boutons "Retour" ont la classe .back-btn
-        backButtons.forEach(btn => {
-            btn.addEventListener('click', function () {
-                // Cacher tous les formulaires et afficher la liste des clients
-                document.querySelectorAll('.client-form').forEach(form => {
-                    form.style.display = 'none';
-                });
-                clientList.style.display = 'block';
-            });
         });
     }
     // Fonction pour charger la liste des clients
