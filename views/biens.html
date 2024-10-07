@@ -1,14 +1,123 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liste des Biens</title>
-</head>
-<body>
-    <h2>Liste des Biens</h2>
-    <div id="biens-list">
-        <!-- La liste des biens sera chargée ici dynamiquement -->
+<div class="main-content">
+    <h2>Biens</h2>
+
+    <!-- Section de recherche et de création -->
+    <div class="search-section">
+        <input type="text" id="search-bar-biens" placeholder="Rechercher un bien...">
+        
     </div>
-</body>
-</html>
+
+    <!-- Liste des biens sous forme de boutons -->
+    <div id="bien-list" class="bien-buttons">
+        <!-- Liste des biens chargés depuis la base de données -->
+    </div>
+
+    <!-- Formulaire de création ou modification de bien (initialement caché) -->
+    <div id="create-bien-form" style="display: none;">
+        <button id="create-back-btn" class="back-btn">← Retour</button>
+        <h2>Création / Modification Bien</h2>
+
+        <h3>Page accueil</h3>
+        <table>
+            <tr>
+                <td>Nom / Numéro bien :</td>
+                <td><input type="text" id="nom_bien"></td>
+                <td>Photo :</td>
+                <td><input type="file" id="photoBien"></td>
+            </tr>
+            <tr>
+                <td>Nom Propriétaire :</td>
+                <td><input type="text" id="nom_proprietaire"></td>
+                <td>Saisonnier :</td>
+                <td><input type="checkbox" id="saisonnier"></td>
+                <td>Annuel :</td>
+                <td><input type="checkbox" id="annuel"></td>
+            </tr>
+            <tr>
+                <td>Adresse bien :</td>
+                <td><input type="text" id="adresse"></td>
+            </tr>
+        </table>
+
+        <h3>Caractéristiques intérieures</h3>
+        <table>
+            <tr>
+                <td>Nbr d'étage :</td>
+                <td><input type="number" id="nbr_etage"></td>
+                <td>Nbr de salle d'eau :</td>
+                <td><input type="number" id="nbr_salle_eau"></td>
+            </tr>
+            <tr>
+                <td>M² :</td>
+                <td><input type="number" id="surface_maison"></td>
+            </tr>
+            <tr>
+                <td>Nbr de chambres :</td>
+                <td><input type="number" id="nbr_chambres"></td>
+                <td>Nbr de salles de bain :</td>
+                <td><input type="number" id="nbr_salle_bain"></td>
+            </tr>
+            <tr>
+                <td>Nbr de salon :</td>
+                <td><input type="number" id="nbr_salon"></td>
+                <td>Code Alarme :</td>
+                <td><input type="text" id="code_alarme"></td>
+            </tr>
+            <tr>
+                <td>Cheminée :</td>
+                <td><input type="checkbox" id="cheminee"></td>
+                <td>Radiateur :</td>
+                <td>
+                    <input type="checkbox" id="radiateur"> Électrique
+                    <input type="checkbox" id="fioul"> Fioul
+                </td>
+            </tr>
+            <tr>
+                <td>Climatisation :</td>
+                <td><input type="checkbox" id="climatisation"></td>
+            </tr>
+        </table>
+
+        <h3>Caractéristiques extérieures</h3>
+        <table>
+            <tr>
+                <td>M² jardin :</td>
+                <td><input type="number" id="surface_jardin"></td>
+            </tr>
+            <tr>
+                <td>Clôture :</td>
+                <td><input type="radio" name="cloture" value="oui"> Oui
+                    <input type="radio" name="cloture" value="non"> Non
+                </td>
+                <td>Code portail :</td>
+                <td><input type="text" id="code_portail"></td>
+            </tr>
+            <tr>
+                <td>Piscine :</td>
+                <td>
+                    <select id="piscine_type">
+                        <option value="creusee">Creusée</option>
+                        <option value="horsSol">Hors-sol</option>
+                    </select>
+                </td>
+                <td>Longueur Piscine (m) :</td>
+                <td><input type="number" id="piscine_longueur"></td>
+                <td>Largeur Piscine (m) :</td>
+                <td><input type="number" id="piscine_largeur"></td>
+            </tr>
+            <tr>
+                <td>Jacuzzi :</td>
+                <td><input type="radio" name="jacuzzi" value="oui"> Oui
+                    <input type="radio" name="jacuzzi" value="non"> Non
+                </td>
+            </tr>
+            <tr>
+                <td>Terrasse (m²) :</td>
+                <td><input type="number" id="surface_terrasse"></td>
+            </tr>
+        </table>
+
+        <button id="submit-bien-btn">Enregistrer le bien</button>
+        <button id="delete-bien-btn" class="btn delete-btn">Supprimer le bien</button>
+    </div>
+</div>

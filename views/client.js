@@ -83,13 +83,13 @@ function initializeClientPage() {
         fetch('/get-clients')
             .then(response => response.json())
             .then(data => {
-                const clientList = document.getElementById('client-list');
+                const clientList = document.getElementById('client-list'); // Div qui contient la liste des clients
                 if (!clientList) {
                     console.error("L'élément client-list est introuvable.");
                     return;
                 }
-                clientList.innerHTML = '';
-
+                clientList.innerHTML = '';  // Vider l'élément avant d'ajouter les nouveaux clients
+    
                 if (data.length === 0) {
                     clientList.innerHTML = '<p>Aucun client trouvé.</p>';
                 } else {
@@ -98,7 +98,7 @@ function initializeClientPage() {
                         button.textContent = `${client.nom} ${client.prenom} - ${client.email}`;
                         button.className = 'client-btn';
                         button.addEventListener('click', function () {
-                            loadClientDetails(client.id);  // Charger les détails du client et ses biens
+                            loadClientDetails(client.id);  // Charger les détails du client sélectionné
                         });
                         clientList.appendChild(button);
                     });
@@ -460,14 +460,20 @@ document.getElementById('update-client-btn').addEventListener('click', async fun
             }
         });
     }
-
+    const searchBar = document.getElementById('search-bar'); // Barre de recherche
+    searchBar.addEventListener('input', function () {
+        searchClient();
+    });
+    
+    // Fonction pour rechercher les clients
     function searchClient() {
-        const searchTerm = document.getElementById('search-bar').value;
+        const searchTerm = searchBar.value.toLowerCase();
+    
         fetch(`/search?term=${encodeURIComponent(searchTerm)}`)
             .then(response => response.json())
             .then(data => {
-                const clientList = document.getElementById('client-list');
-                clientList.innerHTML = '';  // Vider la liste des clients actuels
+                const clientList = document.getElementById('client-list'); // L'élément qui contient la liste des clients
+                clientList.innerHTML = '';  // Vider la liste avant d'afficher les résultats de recherche
     
                 if (data.length === 0) {
                     clientList.innerHTML = '<p>Aucun client trouvé.</p>';
