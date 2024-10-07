@@ -173,6 +173,15 @@ function loadClientDetails(clientId) {
                         biensList.appendChild(bienItem);
                     });
                 }
+                const listeBiensBackBtn = document.getElementById('liste-biens-back-btn');
+                if (listeBiensBackBtn) {
+                    listeBiensBackBtn.style.display = 'block';
+                    listeBiensBackBtn.addEventListener('click', function () {
+                        // Masquer la liste des biens et réafficher le formulaire client
+                        biensList.style.display = 'none';
+                        document.getElementById('edit-client-form').style.display = 'block';
+                    });
+                }
             })
             .catch(error => console.error('Erreur lors du chargement des biens du client:', error));
     }

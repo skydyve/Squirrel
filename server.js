@@ -211,6 +211,15 @@ app.post('/logout', (req, res) => {
     res.redirect('/login');  // Redirige vers la page de login
 });
 
+app.get('/get-all-biens', authenticateToken, (req, res) => {
+    db.all('SELECT * FROM biens', [], (err, rows) => {
+        if (err) {
+            return res.status(500).json({ message: 'Erreur lors de la récupération des biens.' });
+        }
+        console.log(rows);  // Ajoutez ceci pour vérifier que les biens sont bien récupérés
+        res.json(rows);
+    });
+});
 
 // Route pour la page index (protégée par le token JWT)
 app.get('/index', authenticateToken, (req, res) => {
@@ -308,7 +317,11 @@ app.get('/secure-client.js', authenticateToken, (req, res) => {
     // Servir le fichier client.js depuis le dossier views
     res.sendFile(path.join(__dirname, 'views', 'client.js'));
 });
-
+// Route pour servir `client.js` uniquement si l'utilisateur est authentifié
+app.get('/secure-biens.js', authenticateToken, (req, res) => {
+    // Servir le fichier client.js depuis le dossier views
+    res.sendFile(path.join(__dirname, 'views', 'biens.js'));
+});
 // Route pour servir `agenda.js` uniquement si l'utilisateur est authentifié
 app.get('/secure-agenda.js', authenticateToken, (req, res) => {
     // Servir le fichier agenda.js depuis le dossier views
