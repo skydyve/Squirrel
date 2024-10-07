@@ -216,7 +216,6 @@ app.get('/get-all-biens', authenticateToken, (req, res) => {
         if (err) {
             return res.status(500).json({ message: 'Erreur lors de la récupération des biens.' });
         }
-        console.log(rows);  // Ajoutez ceci pour vérifier que les biens sont bien récupérés
         res.json(rows);
     });
 });
