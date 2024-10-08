@@ -253,7 +253,14 @@ document.getElementById('deleteBienBtn').addEventListener('click', async functio
                 document.getElementById('piscineLargeur').value = bien.piscine_largeur || '';
                 document.querySelector(`input[name="jacuzzi"][value="${bien.jacuzzi ? 'oui' : 'non'}"]`).checked = true;
                 document.getElementById('surfaceTerrasse').value = bien.surface_terrasse || '';
-    
+                document.getElementById('wifiCheckbox').checked = bien.wifi || false;
+            if (bien.wifi) {
+                document.getElementById('wifiDetails').style.display = 'table-row';
+                document.getElementById('ssid').value = bien.ssid || '';
+                document.getElementById('wifiPassword').value = bien.wifiPassword || '';
+            } else {
+                document.getElementById('wifiDetails').style.display = 'none';
+            }
                 // Afficher le formulaire des biens
                 document.getElementById('biensForm').style.display = 'block';
             })
@@ -287,7 +294,10 @@ document.getElementById('deleteBienBtn').addEventListener('click', async functio
             piscine_longueur: document.getElementById('piscineLongueur').value,
             piscine_largeur: document.getElementById('piscineLargeur').value,
             jacuzzi: document.querySelector('input[name="jacuzzi"]:checked').value === 'oui',
-            surface_terrasse: document.getElementById('surfaceTerrasse').value
+            surface_terrasse: document.getElementById('surfaceTerrasse').value,
+            wifi: document.getElementById('wifiCheckbox').checked,
+            ssid: document.getElementById('ssid').value || null,
+            wifiPassword: document.getElementById('wifiPassword').value || null
         };
     
         try {
@@ -375,7 +385,7 @@ document.getElementById('openBiensForm').addEventListener('click', function() {
     document.getElementById('surfaceJardin').value = '';
     document.querySelector('input[name="cloture"][value="non"]').checked = true; // Décocher Clôture par défaut
     document.getElementById('codePortail').value = '';
-    document.getElementById('piscineType').value = 'creusee';
+    document.getElementById('piscineType').value = 'aucune';
     document.getElementById('piscineLongueur').value = '';
     document.getElementById('piscineLargeur').value = '';
     document.querySelector('input[name="jacuzzi"][value="non"]').checked = true; // Décocher Jacuzzi par défaut
@@ -493,6 +503,17 @@ document.getElementById('update-client-btn').addEventListener('click', async fun
                 console.error('Erreur lors de la recherche du client:', error);
             });
     }
-
+    // Gestion de l'affichage des champs SSID et mot de passe WiFi
+document.getElementById('wifiCheckbox').addEventListener('change', function () {
+    const wifiDetails = document.getElementById('wifiDetails');
+    if (this.checked) {
+        wifiDetails.style.display = 'table-row';  // Afficher les champs SSID et mot de passe
+    } else {
+        wifiDetails.style.display = 'none';  // Cacher les champs SSID et mot de passe
+        // Réinitialiser les valeurs des champs
+        document.getElementById('ssid').value = '';
+        document.getElementById('wifiPassword').value = '';
+    }
+});
     loadClients();  // Charger la liste des clients lors de l'initialisation de la page
 }

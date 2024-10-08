@@ -177,6 +177,19 @@
             <td><input type="checkbox" id="climatisation"></td>
         </tr>
     </table>
+    <h3>WiFi</h3>
+<table>
+    <tr>
+        <td>WiFi disponible :</td>
+        <td><input type="checkbox" id="wifiCheckbox"> Oui</td>
+    </tr>
+    <tr id="wifiDetails" style="display: none;">
+        <td>SSID :</td>
+        <td><input type="text" id="ssid"></td>
+        <td>Mot de passe WiFi :</td>
+        <td><input type="text" id="wifiPassword"></td>
+    </tr>
+</table>
 
     <h3>Caractéristiques extérieures</h3>
     <table>
@@ -196,6 +209,7 @@
             <td>Piscine :</td>
             <td>
                 <select id="piscineType">
+                    <option value="aucune">Non</option>
                     <option value="creusee">Creusée</option>
                     <option value="horsSol">Hors-sol</option>
                 </select>

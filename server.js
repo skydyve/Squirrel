@@ -71,6 +71,9 @@ db.serialize(() => {
         piscine_largeur REAL,
         jacuzzi BOOLEAN,
         surface_terrasse REAL,
+        wifi BOOLEAN DEFAULT FALSE,        
+        ssid TEXT,                         
+        wifiPassword TEXT,                 
         FOREIGN KEY (client_id) REFERENCES clients (id) ON DELETE CASCADE
     )
     `);
@@ -465,7 +468,8 @@ app.post('/create-bien', authenticateToken, (req, res) => {
         nbr_etage, surface_maison, nbr_chambres, nbr_salle_de_bain, 
         nbr_salle_eau, nbr_salon, code_alarme, cheminee, radiateur, fioul, 
         climatisation, surface_jardin, cloture, code_portail, 
-        piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse 
+        piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse, 
+        wifi, ssid, wifiPassword
     } = req.body;
 
     const sql = `
@@ -474,9 +478,10 @@ app.post('/create-bien', authenticateToken, (req, res) => {
             nbr_etage, surface_maison, nbr_chambres, nbr_salle_de_bain, 
             nbr_salle_eau, nbr_salon, code_alarme, cheminee, radiateur, fioul, 
             climatisation, surface_jardin, cloture, code_portail, 
-            piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse
+            piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse,
+            wifi, ssid, wifiPassword
         ) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     db.run(sql, [
@@ -484,7 +489,8 @@ app.post('/create-bien', authenticateToken, (req, res) => {
         nbr_etage, surface_maison, nbr_chambres, nbr_salle_de_bain, 
         nbr_salle_eau, nbr_salon, code_alarme, cheminee, radiateur, fioul, 
         climatisation, surface_jardin, cloture, code_portail, 
-        piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse
+        piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse,
+        wifi, ssid, wifiPassword
     ], function (err) {
         if (err) {
             res.status(500).json({ error: 'Erreur lors de la création du bien.' });
@@ -501,7 +507,8 @@ app.put('/update-bien/:id', authenticateToken, (req, res) => {
         nbr_etage, surface_maison, nbr_chambres, nbr_salle_de_bain, 
         nbr_salle_eau, nbr_salon, code_alarme, cheminee, radiateur, fioul, 
         climatisation, surface_jardin, cloture, code_portail, 
-        piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse 
+        piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse,
+        wifi, ssid, wifiPassword
     } = req.body;
 
     const sql = `
@@ -513,7 +520,7 @@ app.put('/update-bien/:id', authenticateToken, (req, res) => {
             code_alarme = ?, cheminee = ?, radiateur = ?, fioul = ?, 
             climatisation = ?, surface_jardin = ?, cloture = ?, code_portail = ?, 
             piscine_type = ?, piscine_longueur = ?, piscine_largeur = ?, 
-            jacuzzi = ?, surface_terrasse = ? 
+            jacuzzi = ?, surface_terrasse = ?, wifi = ?, ssid = ?, wifiPassword = ?
         WHERE id = ?
     `;
 
@@ -522,7 +529,8 @@ app.put('/update-bien/:id', authenticateToken, (req, res) => {
         nbr_etage, surface_maison, nbr_chambres, nbr_salle_de_bain, 
         nbr_salle_eau, nbr_salon, code_alarme, cheminee, radiateur, fioul, 
         climatisation, surface_jardin, cloture, code_portail, 
-        piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse, bienId
+        piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse,
+        wifi, ssid, wifiPassword, bienId
     ], function (err) {
         if (err) {
             res.status(500).json({ error: 'Erreur lors de la mise à jour du bien.' });

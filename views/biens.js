@@ -82,7 +82,16 @@ function initializeBiensPage() {
                 console.error('Erreur lors du chargement des biens:', error);
             });
     }
-
+    document.getElementById('wifi').addEventListener('change', function() {
+        const wifiDetails = document.getElementById('wifi-details');
+        if (this.checked) {
+            wifiDetails.style.display = 'table-row';
+        } else {
+            wifiDetails.style.display = 'none';
+            document.getElementById('ssid').value = ''; 
+            document.getElementById('wifiPassword').value = ''; 
+        }
+    });
     // Fonction pour créer ou mettre à jour un bien
     function createOrUpdateBien() {
         const bienData = {
@@ -108,11 +117,14 @@ function initializeBiensPage() {
             piscine_largeur: document.getElementById('piscine_largeur').value,
             jacuzzi: document.querySelector('input[name="jacuzzi"]:checked').value === 'oui',
             surface_terrasse: document.getElementById('surface_terrasse').value,
+            wifi: document.getElementById('wifi').checked,
+            ssid: document.getElementById('ssid').value,
+            wifiPassword: document.getElementById('wifiPassword').value
         };
-
+    
         const method = currentBienId ? 'PUT' : 'POST';
         const url = currentBienId ? `/update-bien/${currentBienId}` : '/create-bien';
-
+    
         fetch(url, {
             method,
             headers: {
@@ -174,6 +186,16 @@ function initializeBiensPage() {
                 // Afficher le formulaire pour modifier le bien
                 createBienForm.style.display = 'block';
                 bienList.style.display = 'none';
+                document.getElementById('wifi').checked = bien.wifi || false;
+            document.getElementById('ssid').value = bien.ssid || '';
+            document.getElementById('wifiPassword').value = bien.wifiPassword || '';
+            
+            // Show or hide Wi-Fi details based on the checkbox
+            document.getElementById('wifi-details').style.display = bien.wifi ? 'table-row' : 'none';
+            
+            // Show form
+            createBienForm.style.display = 'block';
+            bienList.style.display = 'none';
             })
             .catch(error => {
                 console.error('Erreur lors du chargement des détails du bien:', error);
