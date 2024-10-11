@@ -40,6 +40,7 @@ function initializeClientPage() {
             prenom: document.getElementById('prenom').value,
             adresse_principale: document.getElementById('adresse_principale').value,
             code_postal: document.getElementById('code_postal').value,
+            ville: document.getElementById('ville').value,
             pays: document.getElementById('pays').value,
             tel_fixe: document.getElementById('tel_fixe').value,
             tel_portable: document.getElementById('tel_portable').value,
@@ -138,6 +139,7 @@ function loadClientDetails(clientId) {
             document.getElementById('edit-prenom').value = client.prenom || '';
             document.getElementById('edit-adresse_principale').value = client.adresse_principale || '';
             document.getElementById('edit-code_postal').value = client.code_postal || '';
+            document.getElementById('edit-ville').value = client.ville || '';
             document.getElementById('edit-pays').value = client.pays || '';
             document.getElementById('edit-tel_fixe').value = client.tel_fixe || '';
             document.getElementById('edit-tel_portable').value = client.tel_portable || '';
@@ -223,12 +225,63 @@ document.getElementById('deleteBienBtn').addEventListener('click', async functio
 });
 
     // Fonction pour charger les détails d'un bien pour l'afficher dans le formulaire
+    function loadClientBiens(clientId) {
+        fetch(`/get-biens/${clientId}`)
+            .then(response => response.json())
+            .then(biens => {
+                const biensList = document.getElementById('biens-list');
+                biensList.innerHTML = '';  
+
+                if (biens.length === 0) {
+                    biensList.innerHTML = '<p>Aucun bien trouvé pour ce client.</p>';
+                } else {
+                    biens.forEach(bien => {
+                        const bienItem = document.createElement('button');
+                        bienItem.textContent = `Bien #${bien.id} - ${bien.surface_maison} m²`;
+                        bienItem.className = 'bien-btn';
+                        bienItem.addEventListener('click', function () {
+                            loadBienDetails(bien.id);  
+                        });
+                        biensList.appendChild(bienItem);
+                    });
+                }
+                const listeBiensBackBtn = document.getElementById('liste-biens-back-btn');
+                if (listeBiensBackBtn) {
+                    listeBiensBackBtn.style.display = 'block';
+                    listeBiensBackBtn.addEventListener('click', function () {
+                        biensList.style.display = 'none';
+                        document.getElementById('edit-client-form').style.display = 'block';
+                    });
+                }
+            })
+            .catch(error => console.error('Erreur lors du chargement des biens du client:', error));
+    }
+
+    document.getElementById('deleteBienBtn').addEventListener('click', async function () {
+        if (confirm('Êtes-vous sûr de vouloir supprimer ce bien ?')) {
+            try {
+                const response = await fetch(`/delete-bien/${currentBienId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    alert('Bien supprimé avec succès');
+                    loadClientBiens(currentClientId);  
+                    document.getElementById('biensForm').style.display = 'none';  
+                } else {
+                    alert('Erreur lors de la suppression du bien');
+                }
+            } catch (error) {
+                console.error('Erreur lors de la suppression du bien :', error);
+            }
+        }
+    });
+
     function loadBienDetails(bienId) {
         currentBienId = bienId;
         fetch(`/get-bien/${bienId}`)
             .then(response => response.json())
             .then(bien => {
-                // Remplir le formulaire des biens avec les détails du bien sélectionné
                 document.getElementById('nomBien').value = bien.nom_bien || '';
                 document.getElementById('nomProprietaire').value = bien.nom_proprietaire || '';
                 document.getElementById('saisonnier').checked = bien.saisonnier || false;
@@ -241,34 +294,73 @@ document.getElementById('deleteBienBtn').addEventListener('click', async functio
                 document.getElementById('nbrSalleEau').value = bien.nbr_salle_eau || '';
                 document.getElementById('nbrSalon').value = bien.nbr_salon || '';
                 document.getElementById('codeAlarme').value = bien.code_alarme || '';
+                
+                // Initialiser les cases à cocher correctement
                 document.getElementById('cheminee').checked = bien.cheminee || false;
                 document.getElementById('radiateur').checked = bien.radiateur || false;
                 document.getElementById('fioul').checked = bien.fioul || false;
                 document.getElementById('climatisation').checked = bien.climatisation || false;
+                document.getElementById('chauffageSol').checked = bien.chauffage_sol || false;
+                document.getElementById('poele').checked = bien.poele || false;
+    
+                if (document.getElementById('cheminee').checked) {
+                    document.getElementById('cheminéeOptions').style.display = 'block';
+                    document.getElementById('chemineeGranule').checked = bien.cheminee_granule || false;
+                    document.getElementById('chemineeBois').checked = bien.cheminee_bois || false;
+                } else {
+                    document.getElementById('cheminéeOptions').style.display = 'none';
+                }
+    
                 document.getElementById('surfaceJardin').value = bien.surface_jardin || '';
                 document.querySelector(`input[name="cloture"][value="${bien.cloture ? 'oui' : 'non'}"]`).checked = true;
                 document.getElementById('codePortail').value = bien.code_portail || '';
-                document.getElementById('piscineType').value = bien.piscine_type || 'creusee';
+                document.getElementById('piscineType').value = bien.piscine_type || 'aucune';
                 document.getElementById('piscineLongueur').value = bien.piscine_longueur || '';
                 document.getElementById('piscineLargeur').value = bien.piscine_largeur || '';
                 document.querySelector(`input[name="jacuzzi"][value="${bien.jacuzzi ? 'oui' : 'non'}"]`).checked = true;
                 document.getElementById('surfaceTerrasse').value = bien.surface_terrasse || '';
-                document.getElementById('wifiCheckbox').checked = bien.wifi || false;
-            if (bien.wifi) {
-                document.getElementById('wifiDetails').style.display = 'table-row';
-                document.getElementById('ssid').value = bien.ssid || '';
-                document.getElementById('wifiPassword').value = bien.wifiPassword || '';
-            } else {
-                document.getElementById('wifiDetails').style.display = 'none';
-            }
-                // Afficher le formulaire des biens
+                // Gestion de l'affichage des options de type de cheminée
+                document.getElementById('cheminee').addEventListener('change', function () {
+                    const chemineeOptions = document.getElementById('cheminéeOptions');
+                    
+                    if (this.checked) {
+                        // Afficher les options si la case Cheminée est cochée
+                        chemineeOptions.style.display = 'block';
+                    } else {
+                        // Cacher les options et décocher les cases si la case Cheminée est décochée
+                        chemineeOptions.style.display = 'none';
+                        document.getElementById('chemineeGranule').checked = false;
+                        document.getElementById('chemineeBois').checked = false;
+                    }
+                });
+                const wifiElement = document.getElementById('wifiCheckbox');
+                if (wifiElement) {
+                    wifiElement.checked = bien.wifi || false;
+                    const wifiDetails = document.getElementById('wifiDetails');
+                    if (bien.wifi && wifiDetails) {
+                        wifiDetails.style.display = 'table-row';
+                        document.getElementById('ssid').value = bien.ssid || '';
+                        document.getElementById('wifiPassword').value = bien.wifiPassword || '';
+                    } else if (wifiDetails) {
+                        wifiDetails.style.display = 'none';
+                    }
+                }
+    
                 document.getElementById('biensForm').style.display = 'block';
             })
             .catch(error => console.error('Erreur lors du chargement des détails du bien:', error));
     }
-    
-    // Gestion de la soumission du formulaire des biens
+
     document.getElementById('saveBiensBtn').addEventListener('click', async function () {
+        // Récupérer les éléments du formulaire
+        const chemineeGranuleElement = document.getElementById('chemineeGranule');
+        const chemineeBoisElement = document.getElementById('chemineeBois');
+    
+        // Vérifier si ces éléments existent avant d'accéder à leurs propriétés
+        const chemineeGranuleChecked = chemineeGranuleElement ? chemineeGranuleElement.checked : false;
+        const chemineeBoisChecked = chemineeBoisElement ? chemineeBoisElement.checked : false;
+    
+        // Créez l'objet de données
         const data = {
             client_id: currentClientId,
             nom_bien: document.getElementById('nomBien').value,
@@ -297,8 +389,26 @@ document.getElementById('deleteBienBtn').addEventListener('click', async functio
             surface_terrasse: document.getElementById('surfaceTerrasse').value,
             wifi: document.getElementById('wifiCheckbox').checked,
             ssid: document.getElementById('ssid').value || null,
-            wifiPassword: document.getElementById('wifiPassword').value || null
+            wifiPassword: document.getElementById('wifiPassword').value || null,
+            chauffage_sol: document.getElementById('chauffageSol').checked,
+            poele: document.getElementById('poele').checked,
+    
+            // Utilisez les valeurs récupérées ou false si les éléments n'existent pas
+            cheminee_granule: chemineeGranuleChecked,
+            cheminee_bois: chemineeBoisChecked,
+    
+            mode_chauffage: [
+                document.getElementById('chauffageSol').checked ? 'chauffageSol' : null,
+                document.getElementById('radiateur').checked ? 'radiateur' : null,
+                document.getElementById('cheminee').checked ? 'cheminee' : null,
+                document.getElementById('climatisation').checked ? 'climatisation' : null,
+                document.getElementById('poele').checked ? 'poele' : null,
+                document.getElementById('fioul').checked ? 'fioul' : null
+            ].filter(Boolean).join(','),
         };
+    
+        // Log les données avant de les envoyer
+        console.log("Data à envoyer :", data);
     
         try {
             const method = currentBienId ? 'PUT' : 'POST';
@@ -320,8 +430,6 @@ document.getElementById('deleteBienBtn').addEventListener('click', async functio
             console.error('Erreur :', error);
         }
     });
-
-    // Ajouter le comportement du bouton retour sur le formulaire de modification
     const editBackBtn = document.getElementById('edit-back-btn');
     if (editBackBtn) {
         editBackBtn.addEventListener('click', function () {
@@ -334,25 +442,22 @@ document.getElementById('deleteBienBtn').addEventListener('click', async functio
         });
     }
 
-document.getElementById('biens-back-btn').addEventListener('click', function () {
-    const biensForm = document.getElementById('biensForm');
-    const biensList = document.getElementById('biens-list');  
-    const clientForm = document.getElementById('edit-client-form');
-    const updateClientBtn = document.getElementById('update-client-btn');
-    const deleteClientBtn = document.getElementById('delete-client-btn');
+    document.getElementById('biens-back-btn').addEventListener('click', function () {
+        const biensForm = document.getElementById('biensForm');
+        const biensList = document.getElementById('biens-list');
+        const clientForm = document.getElementById('edit-client-form');
+        const updateClientBtn = document.getElementById('update-client-btn');
+        const deleteClientBtn = document.getElementById('delete-client-btn');
 
-    // Masquer le formulaire des biens et la liste des biens
-    if (biensForm) biensForm.style.display = 'none';
-    if (biensList) biensList.style.display = 'none';
+        if (biensForm) biensForm.style.display = 'none';
+        if (biensList) biensList.style.display = 'none';
 
-    // Réafficher le formulaire client
-    if (clientForm) clientForm.style.display = 'block';
+        if (clientForm) clientForm.style.display = 'block';
 
-    // Réafficher les boutons "Mettre à jour" et "Supprimer"
-    if (updateClientBtn) updateClientBtn.style.display = 'block';
-    if (deleteClientBtn) deleteClientBtn.style.display = 'block';
-});
-    // Événement pour le bouton "Retour" sur la page de création
+        if (updateClientBtn) updateClientBtn.style.display = 'block';
+        if (deleteClientBtn) deleteClientBtn.style.display = 'block';
+    });
+
     const backButton = document.getElementById('create-back-btn');
     if (backButton) {
         backButton.addEventListener('click', function () {
@@ -366,50 +471,45 @@ document.getElementById('biens-back-btn').addEventListener('click', function () 
         });
     }
 
-// Comportement du bouton pour afficher le formulaire des biens
-document.getElementById('openBiensForm').addEventListener('click', function() {
-    const biensForm = document.getElementById('biensForm');
-    const editForm = document.getElementById('edit-client-form');
-    
-    // Réinitialiser tous les champs du formulaire des biens
-    document.getElementById('nomBien').value = '';
-    document.getElementById('nomProprietaire').value = '';  // Réinitialiser Nom Propriétaire
-    document.getElementById('adresseBien').value = '';  // Réinitialiser Adresse bien
-    document.getElementById('nbrEtage').value = '';
-    document.getElementById('surfaceMaison').value = '';
-    document.getElementById('nbrChambres').value = '';
-    document.getElementById('nbrSalleBain').value = '';
-    document.getElementById('nbrSalleEau').value = '';
-    document.getElementById('nbrSalon').value = '';
-    document.getElementById('codeAlarme').value = '';
-    document.getElementById('surfaceJardin').value = '';
-    document.querySelector('input[name="cloture"][value="non"]').checked = true; // Décocher Clôture par défaut
-    document.getElementById('codePortail').value = '';
-    document.getElementById('piscineType').value = 'aucune';
-    document.getElementById('piscineLongueur').value = '';
-    document.getElementById('piscineLargeur').value = '';
-    document.querySelector('input[name="jacuzzi"][value="non"]').checked = true; // Décocher Jacuzzi par défaut
-    document.getElementById('surfaceTerrasse').value = '';
-    
-    // Saisonnier/Annuel (checkbox)
-    document.getElementById('saisonnier').checked = false;
-    document.getElementById('annuel').checked = false;
+    document.getElementById('openBiensForm').addEventListener('click', function () {
+        const biensForm = document.getElementById('biensForm');
+        const editForm = document.getElementById('edit-client-form');
 
-    // Cheminée, Climatisation, Radiateur (checkbox)
-    document.getElementById('cheminee').checked = false;
-    document.getElementById('climatisation').checked = false;
-    document.getElementById('radiateur').checked = false;
-    document.getElementById('fioul').checked = false;
+        document.getElementById('nomBien').value = '';
+        document.getElementById('nomProprietaire').value = '';
+        document.getElementById('adresseBien').value = '';
+        document.getElementById('nbrEtage').value = '';
+        document.getElementById('surfaceMaison').value = '';
+        document.getElementById('nbrChambres').value = '';
+        document.getElementById('nbrSalleBain').value = '';
+        document.getElementById('nbrSalleEau').value = '';
+        document.getElementById('nbrSalon').value = '';
+        document.getElementById('codeAlarme').value = '';
+        document.getElementById('surfaceJardin').value = '';
+        document.querySelector('input[name="cloture"][value="non"]').checked = true;
+        document.getElementById('codePortail').value = '';
+        document.getElementById('piscineType').value = 'aucune';
+        document.getElementById('piscineLongueur').value = '';
+        document.getElementById('piscineLargeur').value = '';
+        document.querySelector('input[name="jacuzzi"][value="non"]').checked = true;
+        document.getElementById('surfaceTerrasse').value = '';
 
-    // Afficher le formulaire des biens et masquer le formulaire client
-    if (biensForm.style.display === 'none') {
-        biensForm.style.display = 'block';
-        editForm.style.display = 'none';
-    } else {
-        biensForm.style.display = 'none';
-        editForm.style.display = 'block';
-    }
-});
+        document.getElementById('saisonnier').checked = false;
+        document.getElementById('annuel').checked = false;
+
+        document.getElementById('cheminee').checked = false;
+        document.getElementById('climatisation').checked = false;
+        document.getElementById('radiateur').checked = false;
+        document.getElementById('fioul').checked = false;
+
+        if (biensForm.style.display === 'none') {
+            biensForm.style.display = 'block';
+            editForm.style.display = 'none';
+        } else {
+            biensForm.style.display = 'none';
+            editForm.style.display = 'block';
+        }
+    });
     // Soumission du formulaire pour mettre à jour le client
 document.getElementById('update-client-btn').addEventListener('click', async function () {
     const updatedClient = {
@@ -418,6 +518,7 @@ document.getElementById('update-client-btn').addEventListener('click', async fun
         prenom: document.getElementById('edit-prenom').value,
         adresse_principale: document.getElementById('edit-adresse_principale').value,
         code_postal: document.getElementById('edit-code_postal').value,
+        ville: document.getElementById('edit-ville').value,
         pays: document.getElementById('edit-pays').value,
         tel_fixe: document.getElementById('edit-tel_fixe').value,
         tel_portable: document.getElementById('edit-tel_portable').value,

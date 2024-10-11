@@ -43,7 +43,7 @@ db.serialize(() => {
 });
 
 db.serialize(() => {
-    db.run(`  
+    db.run(`
     CREATE TABLE IF NOT EXISTS biens (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         client_id INTEGER NOT NULL,  
@@ -61,7 +61,9 @@ db.serialize(() => {
         code_alarme TEXT,
         cheminee BOOLEAN DEFAULT FALSE, 
         radiateur BOOLEAN DEFAULT FALSE, 
-        fioul BOOLEAN DEFAULT FALSE, 
+        fioul BOOLEAN DEFAULT FALSE,
+        poele BOOLEAN DEFAULT FALSE, 
+        chauffage_sol BOOLEAN DEFAULT FALSE,
         climatisation BOOLEAN DEFAULT FALSE, 
         surface_jardin REAL,
         cloture BOOLEAN,
@@ -73,7 +75,11 @@ db.serialize(() => {
         surface_terrasse REAL,
         wifi BOOLEAN DEFAULT FALSE,        
         ssid TEXT,                         
-        wifiPassword TEXT,                 
+        wifiPassword TEXT,   
+        mode_chauffage TEXT,  -- Nouvelle colonne pour le mode de chauffage
+        nature_chauffage TEXT,  -- Nouvelle colonne pour la nature du chauffage
+        cheminee_granule BOOLEAN DEFAULT FALSE,  -- Pour stockage granulé si cheminée
+        cheminee_bois BOOLEAN DEFAULT FALSE,  -- Pour stockage bois si cheminée
         FOREIGN KEY (client_id) REFERENCES clients (id) ON DELETE CASCADE
     )
     `);
@@ -89,6 +95,7 @@ db.serialize(() => {
             prenom TEXT,
             adresse_principale TEXT,
             code_postal TEXT,
+            ville TEXT,
             pays TEXT,
             tel_fixe TEXT,
             tel_portable TEXT,
@@ -265,24 +272,23 @@ app.get('/search', authenticateToken, (req, res) => {
 });
 
 app.post('/create-client', authenticateToken, (req, res) => {
-    const { civilite, nom, prenom, adresse_principale, code_postal, pays, tel_fixe, tel_portable, email } = req.body;
+    const { civilite, nom, prenom, adresse_principale, code_postal, ville, pays, tel_fixe, tel_portable, email } = req.body;
 
     // Validation des champs
     if (!nom || !prenom || !email) {
         return res.status(400).send("Veuillez remplir tous les champs obligatoires.");
     }
 
-    // Insertion dans la base de données
+    // Insertion dans la base de données avec ville inclus
     db.run(
-        `INSERT INTO clients (civilite, nom, prenom, adresse_principale, code_postal, pays, tel_fixe, tel_portable, email)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [civilite, nom, prenom, adresse_principale, code_postal, pays, tel_fixe, tel_portable, email],
+        `INSERT INTO clients (civilite, nom, prenom, adresse_principale, code_postal, ville, pays, tel_fixe, tel_portable, email)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [civilite, nom, prenom, adresse_principale, code_postal, ville, pays, tel_fixe, tel_portable, email],
         function (err) {
             if (err) {
                 console.error('Erreur lors de l\'insertion dans la base de données:', err);
                 return res.status(500).send("Erreur lors de la création du client.");
             }
-            // Confirmation que le client a été créé
             res.status(200).send({ message: "Client créé avec succès", clientId: this.lastID });
         }
     );
@@ -345,15 +351,15 @@ app.delete('/delete-client/:id', authenticateToken, (req, res) => {
 
 app.put('/update-client/:id', authenticateToken, (req, res) => {
     const clientId = req.params.id;
-    const { sexe, nom, prenom, adresse_principale, code_postal, pays, tel_fixe, tel_portable, email } = req.body;
+    const { civilite, nom, prenom, adresse_principale, code_postal, ville, pays, tel_fixe, tel_portable, email } = req.body;
 
     const sql = `
         UPDATE clients
-        SET sexe = ?, nom = ?, prenom = ?, adresse_principale = ?, code_postal = ?, pays = ?, tel_fixe = ?, tel_portable = ?, email = ?
+        SET civilite = ?, nom = ?, prenom = ?, adresse_principale = ?, code_postal = ?, ville = ?, pays = ?, tel_fixe = ?, tel_portable = ?, email = ?
         WHERE id = ?
     `;
 
-    db.run(sql, [sexe, nom, prenom, adresse_principale, code_postal, pays, tel_fixe, tel_portable, email, clientId], function (err) {
+    db.run(sql, [civilite, nom, prenom, adresse_principale, code_postal, ville, pays, tel_fixe, tel_portable, email, clientId], function (err) {
         if (err) {
             res.status(500).json({ error: 'Erreur lors de la mise à jour du client.' });
         } else {
@@ -469,7 +475,7 @@ app.post('/create-bien', authenticateToken, (req, res) => {
         nbr_salle_eau, nbr_salon, code_alarme, cheminee, radiateur, fioul, 
         climatisation, surface_jardin, cloture, code_portail, 
         piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse, 
-        wifi, ssid, wifiPassword
+        wifi, ssid, wifiPassword, mode_chauffage, nature_chauffage, cheminee_granule, cheminee_bois, chauffage_sol, poele
     } = req.body;
 
     const sql = `
@@ -479,9 +485,9 @@ app.post('/create-bien', authenticateToken, (req, res) => {
             nbr_salle_eau, nbr_salon, code_alarme, cheminee, radiateur, fioul, 
             climatisation, surface_jardin, cloture, code_portail, 
             piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse,
-            wifi, ssid, wifiPassword
+            wifi, ssid, wifiPassword, mode_chauffage, nature_chauffage, cheminee_granule, cheminee_bois, chauffage_sol, poele
         ) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     db.run(sql, [
@@ -490,7 +496,7 @@ app.post('/create-bien', authenticateToken, (req, res) => {
         nbr_salle_eau, nbr_salon, code_alarme, cheminee, radiateur, fioul, 
         climatisation, surface_jardin, cloture, code_portail, 
         piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse,
-        wifi, ssid, wifiPassword
+        wifi, ssid, wifiPassword, mode_chauffage, nature_chauffage, cheminee_granule, cheminee_bois, chauffage_sol, poele
     ], function (err) {
         if (err) {
             res.status(500).json({ error: 'Erreur lors de la création du bien.' });
@@ -508,7 +514,7 @@ app.put('/update-bien/:id', authenticateToken, (req, res) => {
         nbr_salle_eau, nbr_salon, code_alarme, cheminee, radiateur, fioul, 
         climatisation, surface_jardin, cloture, code_portail, 
         piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse,
-        wifi, ssid, wifiPassword
+        wifi, ssid, wifiPassword, mode_chauffage, nature_chauffage, cheminee_granule, cheminee_bois, chauffage_sol, poele
     } = req.body;
 
     const sql = `
@@ -520,7 +526,8 @@ app.put('/update-bien/:id', authenticateToken, (req, res) => {
             code_alarme = ?, cheminee = ?, radiateur = ?, fioul = ?, 
             climatisation = ?, surface_jardin = ?, cloture = ?, code_portail = ?, 
             piscine_type = ?, piscine_longueur = ?, piscine_largeur = ?, 
-            jacuzzi = ?, surface_terrasse = ?, wifi = ?, ssid = ?, wifiPassword = ?
+            jacuzzi = ?, surface_terrasse = ?, wifi = ?, ssid = ?, wifiPassword = ?, 
+            mode_chauffage = ?, nature_chauffage = ?, cheminee_granule = ?, cheminee_bois = ? , chauffage_sol = ? , poele = ?
         WHERE id = ?
     `;
 
@@ -530,7 +537,7 @@ app.put('/update-bien/:id', authenticateToken, (req, res) => {
         nbr_salle_eau, nbr_salon, code_alarme, cheminee, radiateur, fioul, 
         climatisation, surface_jardin, cloture, code_portail, 
         piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse,
-        wifi, ssid, wifiPassword, bienId
+        wifi, ssid, wifiPassword, mode_chauffage, nature_chauffage, cheminee_granule, cheminee_bois,chauffage_sol, poele, bienId
     ], function (err) {
         if (err) {
             res.status(500).json({ error: 'Erreur lors de la mise à jour du bien.' });
