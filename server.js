@@ -23,6 +23,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+
 // Sert uniquement des fichiers statiques non sensibles
 app.use(express.static(path.join(__dirname, 'public'), {
     index: false // Désactive la diffusion automatique des fichiers index
@@ -76,10 +77,15 @@ db.serialize(() => {
         wifi BOOLEAN DEFAULT FALSE,        
         ssid TEXT,                         
         wifiPassword TEXT,   
-        mode_chauffage TEXT,  -- Nouvelle colonne pour le mode de chauffage
-        nature_chauffage TEXT,  -- Nouvelle colonne pour la nature du chauffage
+        mode_chauffage TEXT,  -- Nouvelle colonne pour le mode de chauffage (ex: chauffage_sol, radiateur, poele, etc.)
+        nature_chauffage TEXT,  -- Nouvelle colonne pour la nature du chauffage (ex: fioul, bois, électricité, etc.)
         cheminee_granule BOOLEAN DEFAULT FALSE,  -- Pour stockage granulé si cheminée
         cheminee_bois BOOLEAN DEFAULT FALSE,  -- Pour stockage bois si cheminée
+        chauffage_electrique BOOLEAN DEFAULT FALSE,  -- Chauffage électrique (nouvelle colonne)
+        chauffage_fioul BOOLEAN DEFAULT FALSE,  -- Chauffage au fioul (nouvelle colonne)
+        chauffage_bois BOOLEAN DEFAULT FALSE,  -- Chauffage au bois (nouvelle colonne)
+        chauffage_pompe_chaleur BOOLEAN DEFAULT FALSE,  -- Pompe à chaleur (nouvelle colonne)
+        chauffage_solaire BOOLEAN DEFAULT FALSE,  -- Panneaux solaires (nouvelle colonne)
         FOREIGN KEY (client_id) REFERENCES clients (id) ON DELETE CASCADE
     )
     `);
@@ -508,11 +514,11 @@ app.post('/create-bien', authenticateToken, (req, res) => {
 
 app.put('/update-bien/:id', authenticateToken, (req, res) => {
     const bienId = req.params.id;
-    const { 
-        nom_bien, adresse, nom_proprietaire, saisonnier, annuel, 
-        nbr_etage, surface_maison, nbr_chambres, nbr_salle_de_bain, 
-        nbr_salle_eau, nbr_salon, code_alarme, cheminee, radiateur, fioul, 
-        climatisation, surface_jardin, cloture, code_portail, 
+    const {
+        nom_bien, adresse, nom_proprietaire, saisonnier, annuel,
+        nbr_etage, surface_maison, nbr_chambres, nbr_salle_de_bain,
+        nbr_salle_eau, nbr_salon, code_alarme, cheminee, radiateur, fioul,
+        climatisation, surface_jardin, cloture, code_portail,
         piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse,
         wifi, ssid, wifiPassword, mode_chauffage, nature_chauffage, cheminee_granule, cheminee_bois, chauffage_sol, poele
     } = req.body;
@@ -532,14 +538,15 @@ app.put('/update-bien/:id', authenticateToken, (req, res) => {
     `;
 
     db.run(sql, [
-        nom_bien, adresse, nom_proprietaire, saisonnier, annuel, 
-        nbr_etage, surface_maison, nbr_chambres, nbr_salle_de_bain, 
-        nbr_salle_eau, nbr_salon, code_alarme, cheminee, radiateur, fioul, 
-        climatisation, surface_jardin, cloture, code_portail, 
+        nom_bien, adresse, nom_proprietaire, saisonnier, annuel,
+        nbr_etage, surface_maison, nbr_chambres, nbr_salle_de_bain,
+        nbr_salle_eau, nbr_salon, code_alarme, cheminee, radiateur, fioul,
+        climatisation, surface_jardin, cloture, code_portail,
         piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse,
-        wifi, ssid, wifiPassword, mode_chauffage, nature_chauffage, cheminee_granule, cheminee_bois,chauffage_sol, poele, bienId
+        wifi, ssid, wifiPassword, mode_chauffage, nature_chauffage, cheminee_granule, cheminee_bois, chauffage_sol, poele, bienId
     ], function (err) {
         if (err) {
+            console.error('Erreur lors de la mise à jour du bien:', err);  // Journale l'erreur complète
             res.status(500).json({ error: 'Erreur lors de la mise à jour du bien.' });
         } else {
             res.json({ message: 'Bien mis à jour avec succès.' });
