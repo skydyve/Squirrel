@@ -64,18 +64,29 @@
                 <td><input type="text" id="code_alarme"></td>
             </tr>
             <tr>
-                <td>Cheminée :</td>
-                <td><input type="checkbox" id="cheminee"></td>
-                <td>Radiateur :</td>
+                <td>Mode de chauffage :</td>
                 <td>
-                    <input type="checkbox" id="radiateur"> Électrique
-                    <input type="checkbox" id="fioul"> Fioul
+                    <div class="dropdown">
+                        <button class="dropbtn">Sélectionner le mode de chauffage</button>
+                        <div class="dropdown-content">
+                            <label><input type="checkbox" name="modeChauffage" id="chauffageSol" value="chauffageSol"> Chauffage au sol</label>
+                            <label><input type="checkbox" name="modeChauffage" id="radiateur" value="radiateur"> Radiateur</label>
+                            <label><input type="checkbox" name="modeChauffage" id="cheminee" value="cheminee"> Cheminée</label>
+                            <label><input type="checkbox" name="modeChauffage" id="climatisation" value="climatisation"> Climatisation</label>
+                            <label><input type="checkbox" name="modeChauffage" id="poele" value="poele"> Poêle</label>
+                            <label><input type="checkbox" name="modeChauffage" id="fioul" value="fioul"> Fioul</label>
+                        </div>
+                    </div>
                 </td>
             </tr>
-            <tr>
-                <td>Climatisation :</td>
-                <td><input type="checkbox" id="climatisation"></td>
+            <tr id="chemineeOptions" style="display:none;">
+                <td>Type de Cheminée :</td>
+                <td>
+                    <label><input type="checkbox" id="chemineeGranule" value="chemineeGranule"> Granulé</label>
+                    <label><input type="checkbox" id="chemineeBois" value="chemineeBois"> Bois</label>
+                </td>
             </tr>
+
         </table>
         <h3>Wi-Fi</h3>
         <table>

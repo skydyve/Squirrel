@@ -53,6 +53,18 @@ function initializeBiensPage() {
         });
     }
 
+    // Afficher ou masquer les types de cheminée en fonction de la case "Cheminée"
+    document.getElementById('cheminee').addEventListener('change', function () {
+        const chemineeOptions = document.getElementById('chemineeOptions');
+        if (this.checked) {
+            chemineeOptions.style.display = 'table-row';
+        } else {
+            chemineeOptions.style.display = 'none';
+            document.getElementById('chemineeGranule').checked = false;
+            document.getElementById('chemineeBois').checked = false;
+        }
+    });
+
     // Fonction pour charger la liste des biens
     function loadBiens() {
         fetch('/get-all-biens')
@@ -82,16 +94,7 @@ function initializeBiensPage() {
                 console.error('Erreur lors du chargement des biens:', error);
             });
     }
-    document.getElementById('wifi').addEventListener('change', function() {
-        const wifiDetails = document.getElementById('wifi-details');
-        if (this.checked) {
-            wifiDetails.style.display = 'table-row';
-        } else {
-            wifiDetails.style.display = 'none';
-            document.getElementById('ssid').value = ''; 
-            document.getElementById('wifiPassword').value = ''; 
-        }
-    });
+
     // Fonction pour créer ou mettre à jour un bien
     function createOrUpdateBien() {
         const bienData = {
@@ -106,6 +109,8 @@ function initializeBiensPage() {
             nbr_salon: document.getElementById('nbr_salon').value,
             code_alarme: document.getElementById('code_alarme').value,
             cheminee: document.getElementById('cheminee').checked,
+            chauffage_sol: document.getElementById('chauffageSol').checked,  // Ajouté
+            poele: document.getElementById('poele').checked,  // Ajouté
             radiateur: document.getElementById('radiateur').checked,
             fioul: document.getElementById('fioul').checked,
             climatisation: document.getElementById('climatisation').checked,
@@ -119,7 +124,9 @@ function initializeBiensPage() {
             surface_terrasse: document.getElementById('surface_terrasse').value,
             wifi: document.getElementById('wifi').checked,
             ssid: document.getElementById('ssid').value,
-            wifiPassword: document.getElementById('wifiPassword').value
+            wifiPassword: document.getElementById('wifiPassword').value,
+            cheminee_granule: document.getElementById('chemineeGranule').checked,  // Ajouté
+            cheminee_bois: document.getElementById('chemineeBois').checked  // Ajouté
         };
     
         const method = currentBienId ? 'PUT' : 'POST';
@@ -170,10 +177,24 @@ function initializeBiensPage() {
                 document.getElementById('saisonnier').checked = bien.saisonnier || false;
                 document.getElementById('annuel').checked = bien.annuel || false;
                 document.getElementById('cheminee').checked = bien.cheminee || false;
+                document.getElementById('chauffageSol').checked = bien.chauffage_sol || false;
+                document.getElementById('poele').checked = bien.poele || false;
                 document.getElementById('radiateur').checked = bien.radiateur || false;
                 document.getElementById('fioul').checked = bien.fioul || false;
                 document.getElementById('climatisation').checked = bien.climatisation || false;
-                
+
+                // Afficher les types de cheminée si "Cheminée" est cochée
+                const chemineeOptions = document.getElementById('chemineeOptions');
+                if (bien.cheminee) {
+                    chemineeOptions.style.display = 'table-row';
+                } else {
+                    chemineeOptions.style.display = 'none';
+                }
+
+                // Gérer les types de cheminée
+                document.getElementById('chemineeGranule').checked = bien.cheminee_granule || false;
+                document.getElementById('chemineeBois').checked = bien.cheminee_bois || false;
+
                 // Gérer les boutons radio
                 document.querySelector(`input[name="cloture"][value="${bien.cloture ? 'oui' : 'non'}"]`).checked = true;
                 document.querySelector(`input[name="jacuzzi"][value="${bien.jacuzzi ? 'oui' : 'non'}"]`).checked = true;
@@ -183,19 +204,15 @@ function initializeBiensPage() {
                 document.getElementById('piscine_longueur').value = bien.piscine_longueur || '';
                 document.getElementById('piscine_largeur').value = bien.piscine_largeur || '';
 
-                // Afficher le formulaire pour modifier le bien
+                // Gérer les détails Wi-Fi
+                document.getElementById('wifi').checked = bien.wifi || false;
+                document.getElementById('ssid').value = bien.ssid || '';
+                document.getElementById('wifiPassword').value = bien.wifiPassword || '';
+                document.getElementById('wifi-details').style.display = bien.wifi ? 'table-row' : 'none';
+
+                // Afficher le formulaire pour modification
                 createBienForm.style.display = 'block';
                 bienList.style.display = 'none';
-                document.getElementById('wifi').checked = bien.wifi || false;
-            document.getElementById('ssid').value = bien.ssid || '';
-            document.getElementById('wifiPassword').value = bien.wifiPassword || '';
-            
-            // Show or hide Wi-Fi details based on the checkbox
-            document.getElementById('wifi-details').style.display = bien.wifi ? 'table-row' : 'none';
-            
-            // Show form
-            createBienForm.style.display = 'block';
-            bienList.style.display = 'none';
             })
             .catch(error => {
                 console.error('Erreur lors du chargement des détails du bien:', error);
@@ -215,6 +232,8 @@ function initializeBiensPage() {
         document.getElementById('nbr_salon').value = '';
         document.getElementById('code_alarme').value = '';
         document.getElementById('cheminee').checked = false;
+        document.getElementById('chauffageSol').checked = false;
+        document.getElementById('poele').checked = false;
         document.getElementById('radiateur').checked = false;
         document.getElementById('fioul').checked = false;
         document.getElementById('climatisation').checked = false;
@@ -226,6 +245,7 @@ function initializeBiensPage() {
         document.getElementById('piscine_largeur').value = '';
         document.querySelector('input[name="jacuzzi"][value="non"]').checked = true;
         document.getElementById('surface_terrasse').value = '';
+        document.getElementById('chemineeOptions').style.display = 'none';  // Masquer les options de cheminée au reset
     }
 
     loadBiens();  // Charger la liste des biens à l'initialisation de la page

@@ -481,7 +481,8 @@ h1, h2 {
 
 #biensForm label {
     font-weight: bold;
-    display: block;
+    display: inline-block;
+    vertical-align: middle;
     margin-bottom: 8px;
     color: #333;
 }
@@ -498,16 +499,20 @@ h1, h2 {
     font-size: 16px;
 }
 
-#biensForm input[type="checkbox"],
+#biensForm input[type="checkbox"] {
+    margin-right: 10px;
+    vertical-align: middle; /* Alignement des cases à cocher avec le texte */
+}
 #biensForm input[type="radio"] {
     margin-right: 10px;
     vertical-align: middle;
 }
 
+/* Aligne les labels des cases à cocher et radios avec leur input */
 #biensForm input[type="checkbox"] + label,
 #biensForm input[type="radio"] + label {
-    display: inline;
-    margin-right: 20px;
+    display: inline-block;
+    vertical-align: middle;
 }
 
 #biensForm button {
@@ -545,11 +550,13 @@ h1, h2 {
 }
 
 /* Espacement et alignement des champs */
+/* Assurez que les cellules du tableau ont un espacement suffisant et sont bien alignées */
 td {
     padding: 10px 0;
-    vertical-align: top;
+    vertical-align: middle; /* Alignement vertical uniforme des cellules */
 }
 
+/* Pour l'espacement à droite des premières cellules */
 td:first-child {
     text-align: right;
     padding-right: 10px;
@@ -572,26 +579,67 @@ td label {
     border: 1px solid #ccc;
     padding: 10px;
     cursor: pointer;
+    display: inline-block;
+    width: auto;
 }
 
+/* Assurez que le dropdown ne soit pas visible par défaut */
 .dropdown-content {
-    display: none;
+    display: none; /* Cacher le menu par défaut */
     position: absolute;
     background-color: #f9f9f9;
     min-width: 200px;
     box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
     z-index: 1;
+    flex-direction: column; /* Alignement vertical */
+    padding: 10px;
 }
 
+/* Afficher le menu déroulant uniquement au survol ou au clic */
+.dropdown:hover .dropdown-content,
+.dropdown:focus-within .dropdown-content {
+    display: block; /* Afficher le contenu lorsqu'on survole ou clique */
+}
+
+/* Style pour aligner correctement les éléments dans le dropdown */
 .dropdown-content label {
-    display: block;
-    padding: 8px;
+    display: block; /* Assure que les labels soient empilés verticalement */
+    padding: 5px 0;
+    width: 100%;
+}
+
+.dropdown-content input[type="checkbox"] {
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+/* Bouton du menu dropdown */
+.dropbtn {
+    background-color: #5151e5;
+    color: white;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
     cursor: pointer;
+    width: 100%;
+}
+
+/* Affichage du dropdown */
+.dropdown {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+/* Éviter que les éléments soient sur la même ligne */
+.dropdown-content input[type="checkbox"] {
+    margin-right: 10px; /* Espacer la case à cocher du texte */
+    vertical-align: middle;
 }
 
 .dropdown-content label:hover {
     background-color: #f1f1f1;
 }
+
 
 /* Afficher le contenu lorsque le menu est ouvert */
 .dropdown:hover .dropdown-content {
