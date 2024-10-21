@@ -1,4 +1,4 @@
-/* Styles généraux */
+/* Styles gÃ©nÃ©raux */
 * {
     margin: 0;
     padding: 0;
@@ -14,16 +14,16 @@ body {
     align-items: center;
 }
 
-/* Container global qui englobe le menu latéral et le contenu principal */
+/* Container global qui englobe le menu latÃ©ral et le contenu principal */
 .container {
     display: flex;
     width: 100%;
-    height: 100vh; /* Le conteneur occupe toute la hauteur de la fenêtre */
+    height: 100vh; /* Le conteneur occupe toute la hauteur de la fenÃªtre */
 }
 
-/* Menu latéral */
+/* Menu latÃ©ral */
 .sidebar {
-    width: 15%; /* Prend environ 15% de la largeur de l'écran */
+    width: 15%; /* Prend environ 15% de la largeur de l'Ã©cran */
     height: 100%;
     background-color: #5151e5;
     color: white;
@@ -56,12 +56,12 @@ body {
 
 /* Contenu principal */
 .main-content {
-    width: 85%; /* Prend environ 85% de la largeur de l'écran */
+    width: 85%; /* Prend environ 85% de la largeur de l'Ã©cran */
     background: #fff;
     padding: 40px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     text-align: left;
-    overflow-y: auto; /* Permet de scroller si le contenu dépasse la hauteur de la page */
+    overflow-y: auto; /* Permet de scroller si le contenu dÃ©passe la hauteur de la page */
     animation: fadeIn 1s ease-in-out;
 }
 
@@ -91,7 +91,7 @@ body {
 
 /* Appliquer les animations pour le contenu principal */
 .fade-in {
-    animation: fadeIn 0.5s ease-in-out forwards; /* Animation d'entrée */
+    animation: fadeIn 0.5s ease-in-out forwards; /* Animation d'entrÃ©e */
 }
 
 .fade-out {
@@ -140,7 +140,7 @@ h1, h2 {
 .search-section {
     display: flex;
     justify-content: space-between;
-    align-items: center; /* Assure que la barre de recherche et le bouton sont alignés verticalement */
+    align-items: center; /* Assure que la barre de recherche et le bouton sont alignÃ©s verticalement */
     margin-bottom: 20px;
 }
 
@@ -149,12 +149,12 @@ h1, h2 {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    font-size: 16px; /* Taille de police ajustée */
+    font-size: 16px; /* Taille de police ajustÃ©e */
 }
 
 #create-client-btn {
-    width: 20%; /* Réduction de la largeur du bouton à 20% */
-    height: 42px; /* Ajuste la hauteur pour être similaire à la barre de recherche */
+    width: 20%; /* RÃ©duction de la largeur du bouton Ã  20% */
+    height: 42px; /* Ajuste la hauteur pour Ãªtre similaire Ã  la barre de recherche */
     padding: 0 10px; /* Moins de padding pour rendre le bouton plus petit */
     background-color: #5151e5;
     color: white;
@@ -162,7 +162,7 @@ h1, h2 {
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease-in-out;
-    font-size: 16px; /* Assure que la taille de la police est similaire à celle de la barre de recherche */
+    font-size: 16px; /* Assure que la taille de la police est similaire Ã  celle de la barre de recherche */
 }
 
 #create-client-btn:hover {
@@ -179,16 +179,16 @@ h1, h2 {
     font-size: 16px;
     margin-bottom: 10px;
     width: 100%; /* Le bouton prend toute la largeur disponible */
-    text-align: left; /* Alignement du texte à gauche */
+    text-align: left; /* Alignement du texte Ã  gauche */
 }
 
 .client-btn:hover {
     background-color: #3434d4;
 }
 
-/* Formulaire caché par défaut */
+/* Formulaire cachÃ© par dÃ©faut */
 #edit-client-form, #create-client-form {
-    display: none; /* Le formulaire est masqué au départ */
+    display: none; /* Le formulaire est masquÃ© au dÃ©part */
     margin-top: 20px;
 }
 
@@ -203,36 +203,36 @@ h1, h2 {
 }
 
 .back-btn {
-    background-color: #5151e5;  /* Même couleur de fond que le bouton 'Créer un client' */
-    color: white;  /* Même couleur de texte */
+    background-color: #5151e5;  /* MÃªme couleur de fond que le bouton 'CrÃ©er un client' */
+    color: white;  /* MÃªme couleur de texte */
     border: none;
-    padding: 10px 20px;  /* Même padding pour correspondre à 'Créer un client' */
-    border-radius: 5px;  /* Même bordure arrondie */
+    padding: 10px 20px;  /* MÃªme padding pour correspondre Ã  'CrÃ©er un client' */
+    border-radius: 5px;  /* MÃªme bordure arrondie */
     cursor: pointer;
-    font-size: 16px;  /* Même taille de police */
+    font-size: 16px;  /* MÃªme taille de police */
     width: auto;  /* Ajuste la largeur automatiquement */
     text-align: center;  /* Centre le texte */
     margin-bottom: 20px;  /* Un espace sous le bouton */
 }
 
 .back-btn:hover {
-    background-color: #3434d4;  /* Change la couleur lors du survol, comme 'Créer un client' */
+    background-color: #3434d4;  /* Change la couleur lors du survol, comme 'CrÃ©er un client' */
 }
 .biens-btn {
-    background-color: #5151e5;  /* Même couleur de fond que le bouton 'Créer un client' */
-    color: white;  /* Même couleur de texte */
+    background-color: #5151e5;  /* MÃªme couleur de fond que le bouton 'CrÃ©er un client' */
+    color: white;  /* MÃªme couleur de texte */
     border: none;
-    padding: 10px 20px;  /* Même padding pour correspondre à 'Créer un client' */
-    border-radius: 5px;  /* Même bordure arrondie */
+    padding: 10px 20px;  /* MÃªme padding pour correspondre Ã  'CrÃ©er un client' */
+    border-radius: 5px;  /* MÃªme bordure arrondie */
     cursor: pointer;
-    font-size: 16px;  /* Même taille de police */
+    font-size: 16px;  /* MÃªme taille de police */
     width: auto;  /* Ajuste la largeur automatiquement */
     text-align: center;  /* Centre le texte */
     margin-bottom: 20px;  /* Un espace sous le bouton */
 }
 
 .biens-btn:hover {
-    background-color: #3434d4;  /* Change la couleur lors du survol, comme 'Créer un client' */
+    background-color: #3434d4;  /* Change la couleur lors du survol, comme 'CrÃ©er un client' */
 }
 /* Style de base pour le popup */
 .popup {
@@ -284,7 +284,7 @@ h1, h2 {
 #closePopupBtn {
     background-color: #f44336;
 }
-/* Titre du mois et année */
+/* Titre du mois et annÃ©e */
 #monthYear {
     text-align: center;
     font-size: 24px;
@@ -314,23 +314,23 @@ h1, h2 {
     background-color: #3434d4;
 }
 
-/* Assurer que le tableau du calendrier ait des colonnes de largeur égale */
+/* Assurer que le tableau du calendrier ait des colonnes de largeur Ã©gale */
 .calendar {
     width: 100%;
     border-collapse: collapse;
-    table-layout: fixed; /* Assure une largeur égale pour chaque colonne */
+    table-layout: fixed; /* Assure une largeur Ã©gale pour chaque colonne */
 }
 
-/* Centrer le texte dans les en-têtes (jours de la semaine) */
+/* Centrer le texte dans les en-tÃªtes (jours de la semaine) */
 .calendar th {
     background-color: #f0f0f0;
     font-weight: bold;
     padding: 10px;
-    text-align: center; /* Centre le texte dans chaque cellule d'en-tête */
-    width: 14.28%; /* Chaque jour prend environ 1/7e de la largeur (100 / 7 ≈ 14.28) */
+    text-align: center; /* Centre le texte dans chaque cellule d'en-tÃªte */
+    width: 14.28%; /* Chaque jour prend environ 1/7e de la largeur (100 / 7 â‰ˆ 14.28) */
 }
 
-/* Centrer également le texte dans les cellules du calendrier */
+/* Centrer Ã©galement le texte dans les cellules du calendrier */
 .calendar td {
     height: 100px;
     text-align: center; /* Centre le texte dans les cellules */
@@ -338,10 +338,10 @@ h1, h2 {
     border: 1px solid #ddd;
     padding: 5px;
     position: relative;
-    width: 14.28%; /* Chaque cellule de jour prend la même largeur que l'en-tête */
+    width: 14.28%; /* Chaque cellule de jour prend la mÃªme largeur que l'en-tÃªte */
 }
 
-/* Style des événements */
+/* Style des Ã©vÃ©nements */
 .event {
     background-color: #5151e5;
     color: white;
@@ -351,7 +351,7 @@ h1, h2 {
     font-size: 12px;
 }
 
-/* Style pour les jours grisés (pas dans le mois en cours) */
+/* Style pour les jours grisÃ©s (pas dans le mois en cours) */
 .grayed {
     background-color: #f9f9f9;
     color: #ccc;
@@ -392,7 +392,7 @@ h1, h2 {
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Améliorer la mise en page */
+/* AmÃ©liorer la mise en page */
 .form-group {
     display: flex;
     justify-content: space-between;
@@ -420,10 +420,10 @@ h1, h2 {
 /* Styliser le champ description */
 #eventDescription {
     height: 80px;
-    resize: vertical; /* Permettre à l'utilisateur de redimensionner verticalement */
+    resize: vertical; /* Permettre Ã  l'utilisateur de redimensionner verticalement */
 }
 
-/* Styliser le champ catégorie */
+/* Styliser le champ catÃ©gorie */
 #eventCategory {
     padding: 10px;
     font-size: 16px;
@@ -464,7 +464,7 @@ h1, h2 {
     background-color: #d32f2f;
 }
 
-/* Espacement supplémentaire pour une meilleure mise en page */
+/* Espacement supplÃ©mentaire pour une meilleure mise en page */
 #eventTitle, #eventTime, #eventDescription, #eventCategory {
     margin-bottom: 20px;
 }
@@ -501,14 +501,14 @@ h1, h2 {
 
 #biensForm input[type="checkbox"] {
     margin-right: 10px;
-    vertical-align: middle; /* Alignement des cases à cocher avec le texte */
+    vertical-align: middle; /* Alignement des cases Ã  cocher avec le texte */
 }
 #biensForm input[type="radio"] {
     margin-right: 10px;
     vertical-align: middle;
 }
 
-/* Aligne les labels des cases à cocher et radios avec leur input */
+/* Aligne les labels des cases Ã  cocher et radios avec leur input */
 #biensForm input[type="checkbox"] + label,
 #biensForm input[type="radio"] + label {
     display: inline-block;
@@ -550,13 +550,13 @@ h1, h2 {
 }
 
 /* Espacement et alignement des champs */
-/* Assurez que les cellules du tableau ont un espacement suffisant et sont bien alignées */
+/* Assurez que les cellules du tableau ont un espacement suffisant et sont bien alignÃ©es */
 td {
     padding: 10px 0;
     vertical-align: middle; /* Alignement vertical uniforme des cellules */
 }
 
-/* Pour l'espacement à droite des premières cellules */
+/* Pour l'espacement Ã  droite des premiÃ¨res cellules */
 td:first-child {
     text-align: right;
     padding-right: 10px;
@@ -568,7 +568,7 @@ td label {
     margin-right: 5px;
 }
 
-/* Styles pour le menu déroulant */
+/* Styles pour le menu dÃ©roulant */
 .dropdown {
     position: relative;
     display: inline-block;
@@ -583,9 +583,9 @@ td label {
     width: auto;
 }
 
-/* Assurez que le dropdown ne soit pas visible par défaut */
+/* Assurez que le dropdown ne soit pas visible par dÃ©faut */
 .dropdown-content {
-    display: none; /* Cacher le menu par défaut */
+    display: none; /* Cacher le menu par dÃ©faut */
     position: absolute;
     background-color: #f9f9f9;
     min-width: 200px;
@@ -595,15 +595,15 @@ td label {
     padding: 10px;
 }
 
-/* Afficher le menu déroulant uniquement au survol ou au clic */
+/* Afficher le menu dÃ©roulant uniquement au survol ou au clic */
 .dropdown:hover .dropdown-content,
 .dropdown:focus-within .dropdown-content {
     display: block; /* Afficher le contenu lorsqu'on survole ou clique */
 }
 
-/* Style pour aligner correctement les éléments dans le dropdown */
+/* Style pour aligner correctement les Ã©lÃ©ments dans le dropdown */
 .dropdown-content label {
-    display: block; /* Assure que les labels soient empilés verticalement */
+    display: block; /* Assure que les labels soient empilÃ©s verticalement */
     padding: 5px 0;
     width: 100%;
 }
@@ -630,9 +630,9 @@ td label {
     display: inline-block;
     width: 100%;
 }
-/* Éviter que les éléments soient sur la même ligne */
+/* Ã‰viter que les Ã©lÃ©ments soient sur la mÃªme ligne */
 .dropdown-content input[type="checkbox"] {
-    margin-right: 10px; /* Espacer la case à cocher du texte */
+    margin-right: 10px; /* Espacer la case Ã  cocher du texte */
     vertical-align: middle;
 }
 
