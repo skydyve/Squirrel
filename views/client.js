@@ -110,6 +110,19 @@ function initializeClientPage() {
             });
     }
 
+// Gestion de l'affichage du champ Surface PoolHouse
+document.querySelectorAll('input[name="poolhouse"]').forEach(function (radio) {
+    radio.addEventListener('change', function () {
+        const poolhouseSurface = document.getElementById('poolhouseSurface');
+        if (document.getElementById('poolhouseOui').checked) {
+            poolhouseSurface.style.display = 'table-row'; // Afficher la surface
+        } else {
+            poolhouseSurface.style.display = 'none'; // Masquer la surface
+            document.getElementById('surfacePoolhouse').value = ''; // Réinitialiser la valeur si "Non" est sélectionné
+        }
+    });
+});
+
     // Masquer la liste des biens lorsque le formulaire client est visible
 function loadClientDetails(clientId) {
     currentClientId = clientId;  // Stocker l'ID du client en cours
@@ -310,7 +323,17 @@ document.getElementById('deleteBienBtn').addEventListener('click', async functio
                 } else {
                     document.getElementById('cheminéeOptions').style.display = 'none';
                 }
+                // PoolHouse
+                document.getElementById('poolhouseOui').checked = bien.poolhouse;
+                document.getElementById('poolhouseNon').checked = !bien.poolhouse;
     
+                if (bien.poolhouse) {
+                    document.getElementById('poolhouseSurface').style.display = 'table-row';
+                    document.getElementById('surfacePoolhouse').value = bien.surface_poolhouse || '';
+                } else {
+                    document.getElementById('poolhouseSurface').style.display = 'none';
+                }
+        
                 document.getElementById('surfaceJardin').value = bien.surface_jardin || '';
                 document.querySelector(`input[name="cloture"][value="${bien.cloture ? 'oui' : 'non'}"]`).checked = true;
                 document.getElementById('codePortail').value = bien.code_portail || '';
@@ -392,6 +415,8 @@ document.getElementById('deleteBienBtn').addEventListener('click', async functio
             wifiPassword: document.getElementById('wifiPassword').value || null,
             chauffage_sol: document.getElementById('chauffageSol').checked,
             poele: document.getElementById('poele').checked,
+            poolhouse: document.querySelector('input[name="poolhouse"]:checked').value === 'oui',
+            surface_poolhouse: document.getElementById('surfacePoolhouse').value || null,
     
             // Utilisez les valeurs récupérées ou false si les éléments n'existent pas
             cheminee_granule: chemineeGranuleChecked,

@@ -65,6 +65,17 @@ function initializeBiensPage() {
         }
     });
 
+    // Afficher ou masquer les détails du poolhouse en fonction de la case "Poolhouse"
+    document.getElementById('poolhouse').addEventListener('change', function () {
+        const poolhouseDetails = document.getElementById('poolhouseDetails');
+        if (this.checked) {
+            poolhouseDetails.style.display = 'table-row';
+        } else {
+            poolhouseDetails.style.display = 'none';
+            document.getElementById('surface_poolhouse').value = '';
+        }
+    });
+
     // Fonction pour charger la liste des biens
     function loadBiens() {
         fetch('/get-all-biens')
@@ -109,8 +120,8 @@ function initializeBiensPage() {
             nbr_salon: document.getElementById('nbr_salon').value,
             code_alarme: document.getElementById('code_alarme').value,
             cheminee: document.getElementById('cheminee').checked,
-            chauffage_sol: document.getElementById('chauffageSol').checked,  // Ajouté
-            poele: document.getElementById('poele').checked,  // Ajouté
+            chauffage_sol: document.getElementById('chauffageSol').checked,
+            poele: document.getElementById('poele').checked,
             radiateur: document.getElementById('radiateur').checked,
             fioul: document.getElementById('fioul').checked,
             climatisation: document.getElementById('climatisation').checked,
@@ -125,13 +136,15 @@ function initializeBiensPage() {
             wifi: document.getElementById('wifi').checked,
             ssid: document.getElementById('ssid').value,
             wifiPassword: document.getElementById('wifiPassword').value,
-            cheminee_granule: document.getElementById('chemineeGranule').checked,  // Ajouté
-            cheminee_bois: document.getElementById('chemineeBois').checked  // Ajouté
+            cheminee_granule: document.getElementById('chemineeGranule').checked,
+            cheminee_bois: document.getElementById('chemineeBois').checked,
+            poolhouse: document.getElementById('poolhouse').checked,  // Ajouté
+            surface_poolhouse: document.getElementById('surface_poolhouse').value || null  // Ajouté
         };
-    
+
         const method = currentBienId ? 'PUT' : 'POST';
         const url = currentBienId ? `/update-bien/${currentBienId}` : '/create-bien';
-    
+
         fetch(url, {
             method,
             headers: {
@@ -210,6 +223,11 @@ function initializeBiensPage() {
                 document.getElementById('wifiPassword').value = bien.wifiPassword || '';
                 document.getElementById('wifi-details').style.display = bien.wifi ? 'table-row' : 'none';
 
+                // Gérer les champs du poolhouse
+                document.getElementById('poolhouse').checked = bien.poolhouse || false;
+                document.getElementById('surface_poolhouse').value = bien.surface_poolhouse || '';
+                document.getElementById('poolhouseDetails').style.display = bien.poolhouse ? 'table-row' : 'none';
+
                 // Afficher le formulaire pour modification
                 createBienForm.style.display = 'block';
                 bienList.style.display = 'none';
@@ -246,6 +264,9 @@ function initializeBiensPage() {
         document.querySelector('input[name="jacuzzi"][value="non"]').checked = true;
         document.getElementById('surface_terrasse').value = '';
         document.getElementById('chemineeOptions').style.display = 'none';  // Masquer les options de cheminée au reset
+        document.getElementById('poolhouse').checked = false;
+        document.getElementById('surface_poolhouse').value = '';
+        document.getElementById('poolhouseDetails').style.display = 'none';
     }
 
     loadBiens();  // Charger la liste des biens à l'initialisation de la page
