@@ -87,6 +87,7 @@ db.serialize(() => {
         chauffage_solaire BOOLEAN DEFAULT FALSE,
         poolhouse BOOLEAN DEFAULT FALSE,  -- Ajouter cette colonne pour le PoolHouse
         surface_poolhouse REAL,  -- Ajouter cette colonne pour la surface du PoolHouse
+        photo_url TEXT,
         FOREIGN KEY (client_id) REFERENCES clients (id) ON DELETE CASCADE
     )
     `);
@@ -475,24 +476,50 @@ app.get('/get-bien/:id', (req, res) => {
         }
     });
 });
-app.post('/create-bien', authenticateToken, (req, res) => {
+
+const multer = require('multer');
+
+// Configuration de l'emplacement de stockage et des noms de fichiers
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/'); // Dossier où les images seront sauvegardées
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + '-' + file.originalname); // Nom du fichier avec un timestamp
+    }
+});
+
+// Initialisation de multer
+const upload = multer({ storage: storage });
+
+// Route pour l'upload d'une photo lors de la création du bien
+app.post('/upload-photo', authenticateToken, upload.single('photoBien'), (req, res) => {
+    if (!req.file) {
+        return res.status(400).send('Aucune photo envoyée.');
+    }
+    // Retourner le chemin de l'image uploadée
+    res.json({ filePath: `/uploads/${req.file.filename}` });
+});
+
+// Route pour créer un bien avec une photo
+app.post('/create-bien', authenticateToken, upload.single('photoBien'), (req, res) => {
     const { 
         client_id, nom_bien, adresse, nom_proprietaire, saisonnier, annuel, 
         nbr_etage, surface_maison, nbr_chambres, nbr_salle_de_bain, 
-        nbr_salle_eau, nbr_salon, code_alarme, cheminee, radiateur, fioul, 
+        nbr_salle_eau, nbr_salon, code_alarme, cheminee, radiateur, fioul,
         climatisation, surface_jardin, cloture, code_portail, 
         piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse, 
         wifi, ssid, wifiPassword, mode_chauffage, cheminee_granule, cheminee_bois, chauffage_sol, poele,
-        chauffage_electrique, chauffage_fioul, chauffage_bois, chauffage_granule, chauffage_pompe_chaleur, chauffage_solaire, 
+        chauffage_electrique, chauffage_fioul, chauffage_bois, chauffage_pompe_chaleur, chauffage_solaire, 
         poolhouse, surface_poolhouse
     } = req.body;
 
-    // Vérification des variables pour éviter les valeurs non définies
+    const photo_url = req.file ? `/uploads/${req.file.filename}` : null; // Photo optionnelle
+
     if (!client_id || !nom_bien) {
         return res.status(400).json({ error: "Le client ID et le nom du bien sont obligatoires." });
     }
 
-    // Requête SQL pour insérer le bien
     const sql = `
     INSERT INTO biens (
         client_id, adresse, nom_proprietaire, nbr_etage, surface_maison, nbr_chambres, 
@@ -502,33 +529,49 @@ app.post('/create-bien', authenticateToken, (req, res) => {
         climatisation, wifi, ssid, wifiPassword, mode_chauffage, cheminee_granule, 
         cheminee_bois, chauffage_sol, poele, poolhouse, surface_poolhouse, 
         chauffage_electrique, chauffage_fioul, chauffage_bois, chauffage_pompe_chaleur, 
-        chauffage_solaire
+        chauffage_solaire, photo_url -- Ajout de la colonne photo_url
     ) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 `;
 
-    db.run(sql, [
-        client_id, adresse, nom_proprietaire, nbr_etage || 0, surface_maison || null, nbr_chambres || 0,
-        nbr_salle_de_bain || 0, nbr_salle_eau || 0, nbr_salon || 0, code_alarme || null, surface_jardin || null,
-        cloture || false, code_portail || null, piscine_type || null, piscine_longueur || null,
-        piscine_largeur || null, jacuzzi || false, surface_terrasse || null, nom_bien,
-        saisonnier || false, annuel || false, cheminee || false, radiateur || false, fioul || false,
-        climatisation || false, wifi || false, ssid || null, wifiPassword || null, mode_chauffage || null,
-        cheminee_granule || false, cheminee_bois || false, chauffage_sol || false, poele || false,
-        poolhouse || false, surface_poolhouse || null, chauffage_electrique || false, chauffage_fioul || false,
-        chauffage_bois || false, chauffage_pompe_chaleur || false, chauffage_solaire || false
-    ], function (err) {
+db.run(sql, [
+    client_id, adresse, nom_proprietaire, nbr_etage || 0, surface_maison || null, nbr_chambres || 0,
+    nbr_salle_de_bain || 0, nbr_salle_eau || 0, nbr_salon || 0, code_alarme || null, surface_jardin || null,
+    cloture || false, code_portail || null, piscine_type || null, piscine_longueur || null,
+    piscine_largeur || null, jacuzzi || false, surface_terrasse || null, nom_bien,
+    saisonnier || false, annuel || false, cheminee || false, radiateur || false, fioul || false,
+    climatisation || false, wifi || false, ssid || null, wifiPassword || null, mode_chauffage || null,
+    cheminee_granule || false, cheminee_bois || false, chauffage_sol || false, poele || false,
+    poolhouse || false, surface_poolhouse || null, chauffage_electrique || false, chauffage_fioul || false,
+    chauffage_bois || false, chauffage_pompe_chaleur || false, chauffage_solaire || false, photo_url || null  // Ajout de photo_url ici
+], function (err) {
+    if (err) {
+        console.error('Erreur lors de la création du bien :', err);
+        return res.status(500).json({ error: 'Erreur lors de la création du bien.' });
+    }
+    const bienId = this.lastID;
+    res.json({ message: 'Bien créé avec succès.', id: bienId });
+});
+});
+
+// Route protégée pour accéder aux fichiers dans le dossier uploads
+app.get('/uploads/:filename', authenticateToken, (req, res) => {
+    const filename = req.params.filename;
+    const filepath = path.join(__dirname, 'uploads', filename);
+    
+    // Vérification que le fichier existe
+    fs.access(filepath, fs.constants.F_OK, (err) => {
         if (err) {
-            console.error('Erreur lors de la création du bien :', err);
-            return res.status(500).json({ error: 'Erreur lors de la création du bien.' });
+            console.error(`Fichier non trouvé : ${filepath}`);
+            return res.status(404).send('Fichier non trouvé');
         }
-        const bienId = this.lastID;  // Récupérer l'ID du bien créé
-        console.log(`Bien créé avec l'ID : ${bienId}`);  // Log pour vérifier l'ID
-        res.json({ message: 'Bien créé avec succès.', id: bienId });
+        // Envoyer le fichier en réponse
+        res.sendFile(filepath);
     });
 });
 
-app.put('/update-bien/:id', authenticateToken, (req, res) => {
+// Route pour modifier un bien avec option de photo
+app.put('/update-bien/:id', authenticateToken, upload.single('photoBien'), (req, res) => {
     const bienId = req.params.id;
     const {
         nom_bien, adresse, nom_proprietaire, saisonnier, annuel,
@@ -537,8 +580,10 @@ app.put('/update-bien/:id', authenticateToken, (req, res) => {
         climatisation, surface_jardin, cloture, code_portail,
         piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse,
         wifi, ssid, wifiPassword, mode_chauffage, cheminee_granule, cheminee_bois, chauffage_sol, poele,
-        poolhouse, surface_poolhouse  // Ajoutez ces nouvelles colonnes
+        poolhouse, surface_poolhouse
     } = req.body;
+
+    const photo_url = req.file ? `/uploads/${req.file.filename}` : req.body.photo_url; // Mise à jour ou conservation de l'ancienne URL
 
     const sql = `
         UPDATE biens 
@@ -550,8 +595,8 @@ app.put('/update-bien/:id', authenticateToken, (req, res) => {
             climatisation = ?, surface_jardin = ?, cloture = ?, code_portail = ?, 
             piscine_type = ?, piscine_longueur = ?, piscine_largeur = ?, 
             jacuzzi = ?, surface_terrasse = ?, wifi = ?, ssid = ?, wifiPassword = ?, 
-            mode_chauffage = ?, cheminee_granule = ?, cheminee_bois = ? , chauffage_sol = ? , poele = ?,
-            poolhouse = ?, surface_poolhouse = ?  -- Ajoutez ces colonnes
+            mode_chauffage = ?, cheminee_granule = ?, cheminee_bois = ?, chauffage_sol = ?, poele = ?,
+            poolhouse = ?, surface_poolhouse = ?, photo_url = ?  -- Mise à jour de l'URL de la photo
         WHERE id = ?
     `;
 
@@ -562,14 +607,13 @@ app.put('/update-bien/:id', authenticateToken, (req, res) => {
         climatisation, surface_jardin, cloture, code_portail,
         piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse,
         wifi, ssid, wifiPassword, mode_chauffage, cheminee_granule, cheminee_bois, chauffage_sol, poele,
-        poolhouse, surface_poolhouse,  // Ajoutez ces valeurs
-        bienId
+        poolhouse, surface_poolhouse, photo_url, bienId
     ], function (err) {
         if (err) {
-            res.status(500).json({ error: 'Erreur lors de la mise à jour du bien.' });
-        } else {
-            res.json({ message: 'Bien mis à jour avec succès.' });
+            console.error('Erreur lors de la mise à jour du bien :', err);
+            return res.status(500).json({ error: 'Erreur lors de la mise à jour du bien.' });
         }
+        res.json({ message: 'Bien mis à jour avec succès.' });
     });
 });
 

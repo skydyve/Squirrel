@@ -160,49 +160,53 @@ document.getElementById('wifi').addEventListener('change', function () {
 
     // Fonction pour créer ou mettre à jour un bien
     function createOrUpdateBien() {
-        const bienData = {
-            nom_bien: document.getElementById('nom_bien').value,
-            nom_proprietaire: document.getElementById('nom_proprietaire').value,
-            adresse: document.getElementById('adresse').value,
-            surface_maison: document.getElementById('surface_maison').value,
-            nbr_etage: document.getElementById('nbr_etage').value,
-            nbr_salle_eau: document.getElementById('nbr_salle_eau').value,
-            nbr_chambres: document.getElementById('nbr_chambres').value,
-            nbr_salle_bain: document.getElementById('nbr_salle_bain').value,
-            nbr_salon: document.getElementById('nbr_salon').value,
-            code_alarme: document.getElementById('code_alarme').value,
-            cheminee: document.getElementById('cheminee').checked,
-            chauffage_sol: document.getElementById('chauffageSol').checked,
-            poele: document.getElementById('poele').checked,
-            radiateur: document.getElementById('radiateur').checked,
-            fioul: document.getElementById('fioul').checked,
-            climatisation: document.getElementById('climatisation').checked,
-            surface_jardin: document.getElementById('surface_jardin').value,
-            cloture: document.querySelector('input[name="cloture"]:checked').value === 'oui',
-            code_portail: document.getElementById('code_portail').value,
-            piscine_type: document.getElementById('piscine_type').value,
-            piscine_longueur: document.getElementById('piscine_longueur').value,
-            piscine_largeur: document.getElementById('piscine_largeur').value,
-            jacuzzi: document.querySelector('input[name="jacuzzi"]:checked').value === 'oui',
-            surface_terrasse: document.getElementById('surface_terrasse').value,
-            wifi: document.getElementById('wifi').checked,
-            ssid: document.getElementById('ssid').value,
-            wifiPassword: document.getElementById('wifiPassword').value,
-            cheminee_granule: document.getElementById('chemineeGranule').checked,
-            cheminee_bois: document.getElementById('chemineeBois').checked,
-            poolhouse: document.getElementById('poolhouse').checked,  // Ajouté
-            surface_poolhouse: document.getElementById('surface_poolhouse').value || null  // Ajouté
-        };
-
+        const formData = new FormData();
+        
+        // Ajout des données texte dans formData
+        formData.append('nom_bien', document.getElementById('nom_bien').value);
+        formData.append('nom_proprietaire', document.getElementById('nom_proprietaire').value);
+        formData.append('adresse', document.getElementById('adresse').value);
+        formData.append('surface_maison', document.getElementById('surface_maison').value);
+        formData.append('nbr_etage', document.getElementById('nbr_etage').value);
+        formData.append('nbr_salle_eau', document.getElementById('nbr_salle_eau').value);
+        formData.append('nbr_chambres', document.getElementById('nbr_chambres').value);
+        formData.append('nbr_salle_bain', document.getElementById('nbr_salle_bain').value);
+        formData.append('nbr_salon', document.getElementById('nbr_salon').value);
+        formData.append('code_alarme', document.getElementById('code_alarme').value);
+        formData.append('cheminee', document.getElementById('cheminee').checked);
+        formData.append('chauffage_sol', document.getElementById('chauffageSol').checked);
+        formData.append('poele', document.getElementById('poele').checked);
+        formData.append('radiateur', document.getElementById('radiateur').checked);
+        formData.append('fioul', document.getElementById('fioul').checked);
+        formData.append('climatisation', document.getElementById('climatisation').checked);
+        formData.append('surface_jardin', document.getElementById('surface_jardin').value);
+        formData.append('cloture', document.querySelector('input[name="cloture"]:checked').value === 'oui');
+        formData.append('code_portail', document.getElementById('code_portail').value);
+        formData.append('piscine_type', document.getElementById('piscine_type').value);
+        formData.append('piscine_longueur', document.getElementById('piscine_longueur').value);
+        formData.append('piscine_largeur', document.getElementById('piscine_largeur').value);
+        formData.append('jacuzzi', document.querySelector('input[name="jacuzzi"]:checked').value === 'oui');
+        formData.append('surface_terrasse', document.getElementById('surface_terrasse').value);
+        formData.append('wifi', document.getElementById('wifi').checked);
+        formData.append('ssid', document.getElementById('ssid').value);
+        formData.append('wifiPassword', document.getElementById('wifiPassword').value);
+        formData.append('cheminee_granule', document.getElementById('chemineeGranule').checked);
+        formData.append('cheminee_bois', document.getElementById('chemineeBois').checked);
+        formData.append('poolhouse', document.getElementById('poolhouse').checked);
+        formData.append('surface_poolhouse', document.getElementById('surface_poolhouse').value || null);
+    
+        // Ajout du fichier photo à formData
+        const photoBien = document.getElementById('photoBien').files[0];
+        if (photoBien) {
+            formData.append('photoBien', photoBien);
+        }
+    
         const method = currentBienId ? 'PUT' : 'POST';
         const url = currentBienId ? `/update-bien/${currentBienId}` : '/create-bien';
-
+    
         fetch(url, {
             method,
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(bienData)
+            body: formData // Envoi des données avec le fichier
         })
         .then(response => response.json())
         .then(data => {
@@ -216,6 +220,25 @@ document.getElementById('wifi').addEventListener('change', function () {
             console.error('Erreur:', error);
         });
     }
+
+    document.getElementById('photoBien').addEventListener('change', function (event) {
+        const preview = document.getElementById('photoPreview');
+        const file = event.target.files[0];
+        
+        if (file) {
+            const reader = new FileReader();
+            
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block'; // Afficher l'aperçu de l'image
+            }
+            
+            reader.readAsDataURL(file); // Lire le fichier image
+        } else {
+            preview.src = '';
+            preview.style.display = 'none'; // Masquer l'aperçu si aucun fichier
+        }
+    });
 
     // Fonction pour charger les détails d'un bien pour modification
     function loadBienDetails(bienId) {
