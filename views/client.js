@@ -32,6 +32,30 @@ function initializeClientPage() {
         });
     }
 
+    document.getElementById('cheminee').addEventListener('change', function () {
+        const chemineeOptions = document.getElementById('cheminéeOptions');
+        
+        if (this.checked) {
+            chemineeOptions.style.display = 'block';  // Afficher les options si "Cheminée" est cochée
+        } else {
+            chemineeOptions.style.display = 'none';  // Masquer les options si "Cheminée" est décochée
+            document.getElementById('chemineeGranule').checked = false;
+            document.getElementById('chemineeBois').checked = false;
+        }
+    });
+
+    document.getElementById('poele').addEventListener('change', function () {
+        const chemineeOptions = document.getElementById('cheminéeOptions');
+
+        if (this.checked) {
+            chemineeOptions.style.display = 'block';  // Afficher les options si "Poêle" est cochée
+        } else {
+            chemineeOptions.style.display = 'none';  // Masquer les options si "Poêle" est décochée
+            document.getElementById('chemineeGranule').checked = false;
+            document.getElementById('chemineeBois').checked = false;
+        }
+    });
+
     function createClient() {
         // Récupérer les données du formulaire de création de client
         const clientData = {
@@ -174,7 +198,7 @@ function loadClientDetails(clientId) {
             .then(biens => {
                 const biensList = document.getElementById('biens-list');
                 biensList.innerHTML = '';  // Vider la liste des biens
-
+    
                 if (biens.length === 0) {
                     biensList.innerHTML = '<p>Aucun bien trouvé pour ce client.</p>';
                 } else {
@@ -183,11 +207,13 @@ function loadClientDetails(clientId) {
                         bienItem.textContent = `Bien #${bien.id} - ${bien.surface_maison} m²`;
                         bienItem.className = 'bien-btn';
                         bienItem.addEventListener('click', function () {
+                            console.log('Bien sélectionné:', bien);  // Ajouter un log pour vérifier le bien
                             loadBienDetails(bien.id);  // Charger les détails du bien dans le formulaire
                         });
                         biensList.appendChild(bienItem);
                     });
                 }
+    
                 const listeBiensBackBtn = document.getElementById('liste-biens-back-btn');
                 if (listeBiensBackBtn) {
                     listeBiensBackBtn.style.display = 'block';
@@ -270,31 +296,17 @@ document.getElementById('deleteBienBtn').addEventListener('click', async functio
             .catch(error => console.error('Erreur lors du chargement des biens du client:', error));
     }
 
-    document.getElementById('deleteBienBtn').addEventListener('click', async function () {
-        if (confirm('Êtes-vous sûr de vouloir supprimer ce bien ?')) {
-            try {
-                const response = await fetch(`/delete-bien/${currentBienId}`, {
-                    method: 'DELETE'
-                });
-
-                if (response.ok) {
-                    alert('Bien supprimé avec succès');
-                    loadClientBiens(currentClientId);  
-                    document.getElementById('biensForm').style.display = 'none';  
-                } else {
-                    alert('Erreur lors de la suppression du bien');
-                }
-            } catch (error) {
-                console.error('Erreur lors de la suppression du bien :', error);
-            }
-        }
-    });
-
     function loadBienDetails(bienId) {
         currentBienId = bienId;
         fetch(`/get-bien/${bienId}`)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Erreur lors de la récupération du bien : ${response.statusText}`);
+                }
+                return response.json();  // Convertir la réponse en JSON si elle est correcte
+            })
             .then(bien => {
+                // Remplir les champs du formulaire avec les détails du bien
                 document.getElementById('nomBien').value = bien.nom_bien || '';
                 document.getElementById('nomProprietaire').value = bien.nom_proprietaire || '';
                 document.getElementById('saisonnier').checked = bien.saisonnier || false;
@@ -308,7 +320,7 @@ document.getElementById('deleteBienBtn').addEventListener('click', async functio
                 document.getElementById('nbrSalon').value = bien.nbr_salon || '';
                 document.getElementById('codeAlarme').value = bien.code_alarme || '';
                 
-                // Initialiser les cases à cocher correctement
+                // Initialiser les cases à cocher
                 document.getElementById('cheminee').checked = bien.cheminee || false;
                 document.getElementById('radiateur').checked = bien.radiateur || false;
                 document.getElementById('fioul').checked = bien.fioul || false;
@@ -323,6 +335,7 @@ document.getElementById('deleteBienBtn').addEventListener('click', async functio
                 } else {
                     document.getElementById('cheminéeOptions').style.display = 'none';
                 }
+    
                 // PoolHouse
                 document.getElementById('poolhouseOui').checked = bien.poolhouse;
                 document.getElementById('poolhouseNon').checked = !bien.poolhouse;
@@ -333,7 +346,7 @@ document.getElementById('deleteBienBtn').addEventListener('click', async functio
                 } else {
                     document.getElementById('poolhouseSurface').style.display = 'none';
                 }
-        
+    
                 document.getElementById('surfaceJardin').value = bien.surface_jardin || '';
                 document.querySelector(`input[name="cloture"][value="${bien.cloture ? 'oui' : 'non'}"]`).checked = true;
                 document.getElementById('codePortail').value = bien.code_portail || '';
@@ -342,20 +355,8 @@ document.getElementById('deleteBienBtn').addEventListener('click', async functio
                 document.getElementById('piscineLargeur').value = bien.piscine_largeur || '';
                 document.querySelector(`input[name="jacuzzi"][value="${bien.jacuzzi ? 'oui' : 'non'}"]`).checked = true;
                 document.getElementById('surfaceTerrasse').value = bien.surface_terrasse || '';
-                // Gestion de l'affichage des options de type de cheminée
-                document.getElementById('cheminee').addEventListener('change', function () {
-                    const chemineeOptions = document.getElementById('cheminéeOptions');
-                    
-                    if (this.checked) {
-                        // Afficher les options si la case Cheminée est cochée
-                        chemineeOptions.style.display = 'block';
-                    } else {
-                        // Cacher les options et décocher les cases si la case Cheminée est décochée
-                        chemineeOptions.style.display = 'none';
-                        document.getElementById('chemineeGranule').checked = false;
-                        document.getElementById('chemineeBois').checked = false;
-                    }
-                });
+    
+                // Afficher les options de WiFi
                 const wifiElement = document.getElementById('wifiCheckbox');
                 if (wifiElement) {
                     wifiElement.checked = bien.wifi || false;
@@ -371,7 +372,10 @@ document.getElementById('deleteBienBtn').addEventListener('click', async functio
     
                 document.getElementById('biensForm').style.display = 'block';
             })
-            .catch(error => console.error('Erreur lors du chargement des détails du bien:', error));
+            .catch(error => {
+                console.error('Erreur lors du chargement des détails du bien:', error);
+                alert('Erreur lors du chargement des détails du bien.');
+            });
     }
 
     document.getElementById('saveBiensBtn').addEventListener('click', async function () {
@@ -406,8 +410,8 @@ document.getElementById('deleteBienBtn').addEventListener('click', async functio
             cloture: document.querySelector('input[name="cloture"]:checked').value === 'oui',
             code_portail: document.getElementById('codePortail').value,
             piscine_type: document.getElementById('piscineType').value,
-            piscine_longueur: document.getElementById('piscineLongueur').value,
-            piscine_largeur: document.getElementById('piscineLargeur').value,
+            piscine_longueur: document.getElementById('piscineLongueur').value || null,
+            piscine_largeur: document.getElementById('piscineLargeur').value || null,
             jacuzzi: document.querySelector('input[name="jacuzzi"]:checked').value === 'oui',
             surface_terrasse: document.getElementById('surfaceTerrasse').value,
             wifi: document.getElementById('wifiCheckbox').checked,
@@ -417,6 +421,9 @@ document.getElementById('deleteBienBtn').addEventListener('click', async functio
             poele: document.getElementById('poele').checked,
             poolhouse: document.querySelector('input[name="poolhouse"]:checked').value === 'oui',
             surface_poolhouse: document.getElementById('surfacePoolhouse').value || null,
+            cheminee_granule: document.getElementById('chemineeGranule').checked,
+            cheminee_bois: document.getElementById('chemineeBois').checked,
+            
     
             // Utilisez les valeurs récupérées ou false si les éléments n'existent pas
             cheminee_granule: chemineeGranuleChecked,
@@ -438,15 +445,20 @@ document.getElementById('deleteBienBtn').addEventListener('click', async functio
         try {
             const method = currentBienId ? 'PUT' : 'POST';
             const url = currentBienId ? `/update-bien/${currentBienId}` : '/create-bien';
-    
             const response = await fetch(url, {
                 method,
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             });
     
+            const result = await response.json();
+    
             if (response.ok) {
                 alert('Bien enregistré avec succès');
+                if (!currentBienId) {
+                    // Si le bien vient d'être créé, on récupère l'ID du bien et on le stocke dans `currentBienId`
+                    currentBienId = result.id;
+                }
                 loadClientBiens(currentClientId);  // Recharger la liste des biens
             } else {
                 alert('Erreur lors de l\'enregistrement du bien');
@@ -526,6 +538,8 @@ document.getElementById('deleteBienBtn').addEventListener('click', async functio
         document.getElementById('climatisation').checked = false;
         document.getElementById('radiateur').checked = false;
         document.getElementById('fioul').checked = false;
+
+        currentBienId = null;
 
         if (biensForm.style.display === 'none') {
             biensForm.style.display = 'block';

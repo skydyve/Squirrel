@@ -5,6 +5,7 @@ function initializeBiensPage() {
     const createBienForm = document.getElementById('create-bien-form');
     const bienList = document.getElementById('bien-list');
     const searchBar = document.getElementById('search-bar-biens');
+    const deleteBienBtn = document.getElementById('delete-bien-btn');
 
     // Afficher le formulaire de création lorsque le bouton "Créer un bien" est cliqué
     if (createBienBtn) {
@@ -16,6 +17,18 @@ function initializeBiensPage() {
             }
         });
     }
+
+    // Afficher ou masquer les détails du Wi-Fi en fonction de la case "Wi-Fi"
+document.getElementById('wifi').addEventListener('change', function () {
+    const wifiDetails = document.getElementById('wifi-details');
+    if (this.checked) {
+        wifiDetails.style.display = 'table-row';  // Afficher les champs SSID et mot de passe si "Wi-Fi" est cochée
+    } else {
+        wifiDetails.style.display = 'none';  // Masquer les champs SSID et mot de passe si "Wi-Fi" est décochée
+        document.getElementById('ssid').value = '';  // Réinitialiser les valeurs
+        document.getElementById('wifiPassword').value = '';  // Réinitialiser les valeurs
+    }
+});
 
     // Gestion du bouton retour dans le formulaire de création
     const createBackBtn = document.getElementById('create-back-btn');
@@ -52,6 +65,8 @@ function initializeBiensPage() {
             }
         });
     }
+
+    
 
     // Afficher ou masquer les types de cheminée en fonction de la case "Cheminée"
     document.getElementById('cheminee').addEventListener('change', function () {
@@ -104,6 +119,43 @@ function initializeBiensPage() {
             .catch(error => {
                 console.error('Erreur lors du chargement des biens:', error);
             });
+    }
+    // Ajouter un écouteur sur le bouton de suppression de bien
+    if (deleteBienBtn) {
+        deleteBienBtn.addEventListener('click', function () {
+            if (currentBienId) {
+                deleteBien(currentBienId);
+            } else {
+                alert("Veuillez sélectionner un bien avant de le supprimer.");
+            }
+        });
+    }
+    // Fonction pour supprimer un bien
+    function deleteBien(bienId) {
+        // Vérifier avec une simple boîte de dialogue de confirmation
+        if (window.confirm('Êtes-vous sûr de vouloir supprimer ce bien ?')) {
+            fetch(`/delete-bien/${bienId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Bien supprimé avec succès');
+                    loadBiens();  // Recharger la liste des biens après suppression
+    
+                    // Simuler un clic sur le bouton retour : cacher le formulaire et afficher la liste des biens
+                    document.getElementById('create-bien-form').style.display = 'none';  // Cacher le formulaire
+                    document.getElementById('bien-list').style.display = 'block';  // Afficher la liste des biens
+                } else {
+                    alert('Erreur lors de la suppression du bien');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur lors de la suppression du bien:', error);
+            });
+        }
     }
 
     // Fonction pour créer ou mettre à jour un bien

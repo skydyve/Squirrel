@@ -78,7 +78,6 @@ db.serialize(() => {
         ssid TEXT,
         wifiPassword TEXT,
         mode_chauffage TEXT,
-        nature_chauffage TEXT,
         cheminee_granule BOOLEAN DEFAULT FALSE,
         cheminee_bois BOOLEAN DEFAULT FALSE,
         chauffage_electrique BOOLEAN DEFAULT FALSE,
@@ -462,17 +461,17 @@ app.get('/get-biens/:clientId', authenticateToken, (req, res) => {
         res.json(rows); // Renvoie les biens sous forme de JSON
     });
 });
-app.get('/get-bien/:id', authenticateToken, (req, res) => {
+app.get('/get-bien/:id', (req, res) => {
     const bienId = req.params.id;
 
     db.get('SELECT * FROM biens WHERE id = ?', [bienId], (err, row) => {
         if (err) {
             console.error(err.message);
-            res.status(500).send('Erreur lors de la récupération du bien');
+            res.status(500).json({ error: 'Erreur lors de la récupération du bien' });
         } else if (!row) {
-            res.status(404).send('Bien non trouvé');
+            res.status(404).json({ error: 'Bien non trouvé' });
         } else {
-            res.json(row);  // Renvoie les informations du bien sous forme de JSON
+            res.json(row);
         }
     });
 });
@@ -483,37 +482,49 @@ app.post('/create-bien', authenticateToken, (req, res) => {
         nbr_salle_eau, nbr_salon, code_alarme, cheminee, radiateur, fioul, 
         climatisation, surface_jardin, cloture, code_portail, 
         piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse, 
-        wifi, ssid, wifiPassword, mode_chauffage, nature_chauffage, cheminee_granule, cheminee_bois, chauffage_sol, poele,
-        poolhouse, surface_poolhouse  // Ajoutez ces deux nouvelles variables
+        wifi, ssid, wifiPassword, mode_chauffage, cheminee_granule, cheminee_bois, chauffage_sol, poele,
+        chauffage_electrique, chauffage_fioul, chauffage_bois, chauffage_granule, chauffage_pompe_chaleur, chauffage_solaire, 
+        poolhouse, surface_poolhouse
     } = req.body;
 
+    // Vérification des variables pour éviter les valeurs non définies
+    if (!client_id || !nom_bien) {
+        return res.status(400).json({ error: "Le client ID et le nom du bien sont obligatoires." });
+    }
+
+    // Requête SQL pour insérer le bien
     const sql = `
-        INSERT INTO biens (
-            client_id, nom_bien, adresse, nom_proprietaire, saisonnier, annuel, 
-            nbr_etage, surface_maison, nbr_chambres, nbr_salle_de_bain, 
-            nbr_salle_eau, nbr_salon, code_alarme, cheminee, radiateur, fioul, 
-            climatisation, surface_jardin, cloture, code_portail, 
-            piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse,
-            wifi, ssid, wifiPassword, mode_chauffage, nature_chauffage, cheminee_granule, cheminee_bois, chauffage_sol, poele,
-            poolhouse, surface_poolhouse  -- Ajoutez ces colonnes
-        ) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
+    INSERT INTO biens (
+        client_id, adresse, nom_proprietaire, nbr_etage, surface_maison, nbr_chambres, 
+        nbr_salle_de_bain, nbr_salle_eau, nbr_salon, code_alarme, surface_jardin, cloture, 
+        code_portail, piscine_type, piscine_longueur, piscine_largeur, jacuzzi, 
+        surface_terrasse, nom_bien, saisonnier, annuel, cheminee, radiateur, fioul, 
+        climatisation, wifi, ssid, wifiPassword, mode_chauffage, cheminee_granule, 
+        cheminee_bois, chauffage_sol, poele, poolhouse, surface_poolhouse, 
+        chauffage_electrique, chauffage_fioul, chauffage_bois, chauffage_pompe_chaleur, 
+        chauffage_solaire
+    ) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+`;
 
     db.run(sql, [
-        client_id, nom_bien, adresse, nom_proprietaire, saisonnier, annuel, 
-        nbr_etage, surface_maison, nbr_chambres, nbr_salle_de_bain, 
-        nbr_salle_eau, nbr_salon, code_alarme, cheminee, radiateur, fioul, 
-        climatisation, surface_jardin, cloture, code_portail, 
-        piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse,
-        wifi, ssid, wifiPassword, mode_chauffage, nature_chauffage, cheminee_granule, cheminee_bois, chauffage_sol, poele,
-        poolhouse, surface_poolhouse  // Ajoutez ces valeurs
+        client_id, adresse, nom_proprietaire, nbr_etage || 0, surface_maison || null, nbr_chambres || 0,
+        nbr_salle_de_bain || 0, nbr_salle_eau || 0, nbr_salon || 0, code_alarme || null, surface_jardin || null,
+        cloture || false, code_portail || null, piscine_type || null, piscine_longueur || null,
+        piscine_largeur || null, jacuzzi || false, surface_terrasse || null, nom_bien,
+        saisonnier || false, annuel || false, cheminee || false, radiateur || false, fioul || false,
+        climatisation || false, wifi || false, ssid || null, wifiPassword || null, mode_chauffage || null,
+        cheminee_granule || false, cheminee_bois || false, chauffage_sol || false, poele || false,
+        poolhouse || false, surface_poolhouse || null, chauffage_electrique || false, chauffage_fioul || false,
+        chauffage_bois || false, chauffage_pompe_chaleur || false, chauffage_solaire || false
     ], function (err) {
         if (err) {
-            res.status(500).json({ error: 'Erreur lors de la création du bien.' });
-        } else {
-            res.json({ message: 'Bien créé avec succès.', id: this.lastID });
+            console.error('Erreur lors de la création du bien :', err);
+            return res.status(500).json({ error: 'Erreur lors de la création du bien.' });
         }
+        const bienId = this.lastID;  // Récupérer l'ID du bien créé
+        console.log(`Bien créé avec l'ID : ${bienId}`);  // Log pour vérifier l'ID
+        res.json({ message: 'Bien créé avec succès.', id: bienId });
     });
 });
 
@@ -525,7 +536,7 @@ app.put('/update-bien/:id', authenticateToken, (req, res) => {
         nbr_salle_eau, nbr_salon, code_alarme, cheminee, radiateur, fioul,
         climatisation, surface_jardin, cloture, code_portail,
         piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse,
-        wifi, ssid, wifiPassword, mode_chauffage, nature_chauffage, cheminee_granule, cheminee_bois, chauffage_sol, poele,
+        wifi, ssid, wifiPassword, mode_chauffage, cheminee_granule, cheminee_bois, chauffage_sol, poele,
         poolhouse, surface_poolhouse  // Ajoutez ces nouvelles colonnes
     } = req.body;
 
@@ -539,7 +550,7 @@ app.put('/update-bien/:id', authenticateToken, (req, res) => {
             climatisation = ?, surface_jardin = ?, cloture = ?, code_portail = ?, 
             piscine_type = ?, piscine_longueur = ?, piscine_largeur = ?, 
             jacuzzi = ?, surface_terrasse = ?, wifi = ?, ssid = ?, wifiPassword = ?, 
-            mode_chauffage = ?, nature_chauffage = ?, cheminee_granule = ?, cheminee_bois = ? , chauffage_sol = ? , poele = ?,
+            mode_chauffage = ?, cheminee_granule = ?, cheminee_bois = ? , chauffage_sol = ? , poele = ?,
             poolhouse = ?, surface_poolhouse = ?  -- Ajoutez ces colonnes
         WHERE id = ?
     `;
@@ -550,7 +561,7 @@ app.put('/update-bien/:id', authenticateToken, (req, res) => {
         nbr_salle_eau, nbr_salon, code_alarme, cheminee, radiateur, fioul,
         climatisation, surface_jardin, cloture, code_portail,
         piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse,
-        wifi, ssid, wifiPassword, mode_chauffage, nature_chauffage, cheminee_granule, cheminee_bois, chauffage_sol, poele,
+        wifi, ssid, wifiPassword, mode_chauffage, cheminee_granule, cheminee_bois, chauffage_sol, poele,
         poolhouse, surface_poolhouse,  // Ajoutez ces valeurs
         bienId
     ], function (err) {
