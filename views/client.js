@@ -609,5 +609,172 @@ document.getElementById('wifiCheckbox').addEventListener('change', function () {
         document.getElementById('wifiPassword').value = '';
     }
 });
+
+// Fonction pour ouvrir/fermer le popup de contact
+function toggleContactPopup() {
+    const popup = document.getElementById('contact-popup');
+    const addContactForm = document.getElementById('add-contact-form');
+    if (popup) {
+        popup.style.display = popup.style.display === 'none' ? 'block' : 'none';
+        if (popup.style.display === 'block') {
+            loadContacts(); // Charger la liste des contacts
+            addContactForm.style.display = 'none'; // Masque le formulaire lors de l'ouverture
+        }
+    }
+}
+
+// Fonction pour charger la liste des contacts pour un client spécifique
+function loadContacts() {
+    if (!currentClientId) {
+        console.error("ID du client en cours non défini");
+        return;
+    }
+
+    fetch(`/get-contacts/${currentClientId}`)
+        .then(response => response.json())
+        .then(contacts => {
+            const contactList = document.getElementById('contact-list');
+            contactList.innerHTML = '';
+
+            contacts.forEach(contact => {
+                const contactContainer = document.createElement('div');
+                contactContainer.className = 'contact-item';
+
+                const contactBtn = document.createElement('button');
+                contactBtn.textContent = `${contact.nom} ${contact.prenom}`;
+                contactBtn.className = 'contact-btn';
+                contactBtn.onclick = () => loadContactDetails(contact.id);
+
+                const deleteIcon = document.createElement('span');
+                deleteIcon.innerHTML = '&times;';
+                deleteIcon.className = 'delete-contact-icon';
+                deleteIcon.onclick = (event) => {
+                    event.stopPropagation(); // Empêche l'ouverture des détails du contact
+                    deleteSpecificContact(contact.id);
+                };
+
+                contactContainer.appendChild(contactBtn);
+                contactContainer.appendChild(deleteIcon);
+                contactList.appendChild(contactContainer);
+            });
+        })
+        .catch(error => console.error("Erreur lors du chargement des contacts:", error));
+}
+
+// Fonction pour afficher les détails d'un contact dans le formulaire de modification
+function loadContactDetails(contactId) {
+    currentContactId = contactId;
+
+    fetch(`/get-contact/${contactId}`)
+        .then(response => {
+            if (!response.ok) {
+                if (response.status === 404) {
+                    throw new Error("Contact non trouvé");
+                } else {
+                    throw new Error(`Erreur lors du chargement du contact : ${response.status}`);
+                }
+            }
+            return response.json();
+        })
+        .then(contact => {
+            // Remplissez le formulaire avec les informations du contact récupérées
+            document.getElementById('contact-nom').value = contact.nom || '';
+            document.getElementById('contact-prenom').value = contact.prenom || '';
+            document.getElementById('contact-tel').value = contact.telephone || '';
+            document.getElementById('contact-email').value = contact.email || '';
+
+            // Affichez le formulaire d'édition de contact
+            document.getElementById('add-contact-form').style.display = 'block';
+        })
+        .catch(error => {
+            console.error("Erreur lors du chargement du contact:", error);
+            alert(error.message);
+        });
+}
+
+// Fonction pour sauvegarder le contact (ajouter ou mettre à jour)
+function saveContact() {
+    const contactData = {
+        nom: document.getElementById('contact-nom').value,
+        prenom: document.getElementById('contact-prenom').value,
+        telephone: document.getElementById('contact-tel').value,
+        email: document.getElementById('contact-email').value,
+        client_id: currentClientId // ID du client associé
+    };
+
+    const url = currentContactId ? `/update-contact/${currentContactId}` : '/create-contact';
+    const method = currentContactId ? 'PUT' : 'POST';
+
+    fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(contactData)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Erreur HTTP ! Statut : ${response.status}`);
+        }
+        return response.json(); // Transforme la réponse en JSON
+    })
+    .then(data => {
+        currentContactId = data.contactId; // Mettez à jour l'ID du contact pour la sélection
+        loadContacts(); // Recharger la liste des contacts après la sauvegarde
+        toggleContactPopup(); // Fermer le popup
+        alert("Contact sauvegardé avec succès");
+    })
+    .catch(error => console.error("Erreur lors de la sauvegarde du contact:", error));
+}
+
+// Fonction pour afficher le formulaire d'ajout de contact
+function showAddContactForm() {
+    const addContactForm = document.getElementById('add-contact-form');
+    if (addContactForm) {
+        // Réinitialiser les champs du formulaire de contact
+        document.getElementById('contact-nom').value = '';
+        document.getElementById('contact-prenom').value = '';
+        document.getElementById('contact-tel').value = '';
+        document.getElementById('contact-email').value = '';
+
+        // Affiche le formulaire d'ajout de contact
+        addContactForm.style.display = 'block';
+        currentContactId = null;  // Réinitialise l'ID pour indiquer qu'il s'agit d'une nouvelle création
+    } else {
+        console.error("Le formulaire d'ajout de contact est introuvable.");
+    }
+}
+
+// Fonction pour supprimer un contact spécifique en utilisant son ID
+function deleteSpecificContact(contactId) {
+    if (confirm('Êtes-vous sûr de vouloir supprimer ce contact ?')) {
+        fetch(`/delete-contact/${contactId}`, {
+            method: 'DELETE'
+        })
+        .then(response => {
+            if (response.ok) {
+                loadContacts();  // Recharger la liste des contacts après la suppression
+                alert("Contact supprimé avec succès");
+            } else {
+                alert("Erreur lors de la suppression du contact.");
+            }
+        })
+        .catch(error => console.error("Erreur lors de la suppression du contact:", error));
+    }
+}
+
+// Associer les événements aux boutons
+document.getElementById('contact-btn').addEventListener('click', toggleContactPopup);
+const saveContactBtn = document.getElementById('save-contact-btn');
+if (saveContactBtn) {
+    saveContactBtn.addEventListener('click', saveContact);
+}
+const addContactBtn = document.querySelector('button[onclick="showAddContactForm()"]');
+if (addContactBtn) {
+    addContactBtn.addEventListener('click', showAddContactForm);
+}
+const closePopupCross = document.querySelector('.close-popup-cross');
+if (closePopupCross) {
+    closePopupCross.addEventListener('click', toggleContactPopup);
+}
+
     loadClients();  // Charger la liste des clients lors de l'initialisation de la page
 }

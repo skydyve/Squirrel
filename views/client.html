@@ -64,6 +64,8 @@
     <!-- Formulaire de modification de client (initialement caché) -->
 <div id="edit-client-form" style="display: none;">
     <button id="edit-back-btn" class="back-btn">← Retour</button>
+    <!-- Bouton pour ouvrir le popup des contacts -->
+<button id="contact-btn">Contact</button>
 
     <!-- Bouton pour afficher/cacher le formulaire des biens -->
     <button id="openBiensForm" class="biens-btn" style="float: right; width: auto;">Ajouter des biens</button>
@@ -270,4 +272,50 @@
     <button type="submit" id="saveBiensBtn">Enregistrer le bien</button>
     <button id="deleteBienBtn" class="btn delete-btn">Supprimer le bien</button>
 </div>
+</div>
+
+<!-- Popup de gestion des contacts (initialement caché) -->
+<div id="contact-popup" class="popup" style="display: none;">
+    <!-- Croix de fermeture en haut à droite -->
+    <button class="close-popup-cross" onclick="toggleContactPopup()">×</button>
+    
+    <!-- Titre principal du popup -->
+    <h3>Gestion des Contacts</h3>
+    
+    <!-- Liste des contacts -->
+    <div id="contact-list">
+        <!-- Les éléments de contact seront chargés ici dynamiquement -->
+        <!-- Exemple de contact -->
+        <div class="contact-item">
+            <button class="contact-btn">John Doe</button>
+            <span class="delete-contact-icon" onclick="deleteSpecificContact('john_doe')">×</span>
+        </div>
+        <div class="contact-item">
+            <button class="contact-btn">Jane Smith</button>
+            <span class="delete-contact-icon" onclick="deleteSpecificContact('jane_smith')">×</span>
+        </div>
+        <!-- Autres contacts ajoutés dynamiquement ici -->
+    </div>
+    
+    <!-- Boutons pour ajouter ou sauvegarder les contacts -->
+    <div class="popup-content">
+        <button onclick="showAddContactForm()">Ajouter un contact</button>
+        <button id="save-contact-btn">Sauvegarder</button>
+    </div>
+    
+    <!-- Formulaire d'ajout ou de modification de contact (initialement caché) -->
+    <div id="add-contact-form" style="display: none;">
+        <h4>Ajouter / Modifier Contact</h4>
+        <label for="contact-nom">Nom :</label>
+        <input type="text" id="contact-nom" placeholder="Nom du contact">
+        
+        <label for="contact-prenom">Prénom :</label>
+        <input type="text" id="contact-prenom" placeholder="Prénom du contact">
+        
+        <label for="contact-tel">Téléphone :</label>
+        <input type="text" id="contact-tel" placeholder="Téléphone du contact">
+        
+        <label for="contact-email">Email :</label>
+        <input type="email" id="contact-email" placeholder="Email du contact">
+    </div>
 </div>

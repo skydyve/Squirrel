@@ -30,6 +30,7 @@
                 <td>
                     <div id="photoContainer" style="border: 1px solid #ccc; width: 200px; height: 200px; display: flex; justify-content: center; align-items: center;">
                         <img id="photoPreview" src="" alt="Aperçu de la photo" style="max-width: 100%; max-height: 100%; display: none;">
+                        <input type="hidden" id="currentPhotoUrl" name="currentPhotoUrl" value="">
                     </div>
                 </td>
             </tr>
@@ -118,9 +119,7 @@
     </tr>
     <tr>
         <td>Clôture :</td>
-        <td><input type="radio" name="cloture" value="oui"> Oui
-            <input type="radio" name="cloture" value="non"> Non
-        </td>
+        <td><input type="checkbox" id="cloture"></td>
         <td>Code portail :</td>
         <td><input type="text" id="code_portail"></td>
     </tr>
@@ -145,12 +144,10 @@
         <td>Surface Poolhouse (m²) :</td>
         <td><input type="number" id="surface_poolhouse"></td>
     </tr>
-    <tr>
-        <td>Jacuzzi :</td>
-        <td><input type="radio" name="jacuzzi" value="oui"> Oui
-            <input type="radio" name="jacuzzi" value="non"> Non
-        </td>
-    </tr>
+        <tr>
+            <td>Jacuzzi :</td>
+            <td><input type="checkbox" id="jacuzzi"></td>
+        </tr>
     <tr>
         <td>Terrasse (m²) :</td>
         <td><input type="number" id="surface_terrasse"></td>

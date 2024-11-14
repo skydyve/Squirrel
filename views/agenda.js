@@ -25,7 +25,8 @@
         'repos': 'gray',
         'perso': 'purple'
     };
-
+    document.getElementById('workStart').addEventListener('change', loadCalendar);
+    document.getElementById('workEnd').addEventListener('change', loadCalendar);
 
 // Charger les événements depuis la base de données
 async function loadEvents() {
@@ -70,27 +71,25 @@ async function loadCalendar() {
 function loadMonthView(month, year, events) {
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = 32 - new Date(year, month, 32).getDate();
-
-    // Mise à jour de l'affichage du mois et de l'année
     monthYearDisplay.innerHTML = `${months[month]} ${year}`;
-
     let date = 1;
-    for (let i = 0; i < 6; i++) {  // 6 lignes (max 6 semaines par mois)
+
+    for (let i = 0; i < 6; i++) { // Maximum de 6 semaines dans un mois
         const row = document.createElement('tr');
         for (let j = 0; j < 7; j++) {
             const cell = document.createElement('td');
+            const eventsContainer = document.createElement('div');
+            eventsContainer.classList.add('events-container');
+            cell.appendChild(eventsContainer);
 
-            if (i === 0 && j < firstDay) {
-                cell.classList.add('grayed');
-                cell.appendChild(document.createTextNode(''));
-            } else if (date > daysInMonth) {
+            if (i === 0 && j < firstDay || date > daysInMonth) {
                 cell.classList.add('grayed');
                 cell.appendChild(document.createTextNode(''));
             } else {
                 const cellDate = new Date(year, month, date);
                 cell.appendChild(document.createTextNode(date));
-
-                // Afficher les événements pour ce jour
+                
+                // Filtrer les événements pour ce jour
                 const dayEvents = events.filter(event => {
                     const eventDate = new Date(event.start);
                     return eventDate.getDate() === cellDate.getDate() &&
@@ -98,26 +97,21 @@ function loadMonthView(month, year, events) {
                         eventDate.getFullYear() === cellDate.getFullYear();
                 });
 
+                // Affichage des événements sans limitation
                 dayEvents.forEach(event => {
                     const eventElement = document.createElement('div');
                     eventElement.classList.add('event');
                     eventElement.textContent = event.title;
-
-                    // Ajouter la couleur de la catégorie
-                    const category = event.category || 'rendez-vous';  // Catégorie par défaut "rendez-vous"
-                    eventElement.style.backgroundColor = categoryColors[category] || 'blue';
-
+                    eventElement.style.backgroundColor = categoryColors[event.category] || 'blue';
                     eventElement.addEventListener('click', (e) => {
                         e.stopPropagation();
                         openEventPopup(event, cell);
                     });
-                    cell.appendChild(eventElement);
+                    eventsContainer.appendChild(eventElement);
                 });
 
-                // Définir la date sélectionnée lorsque l'utilisateur clique sur un jour
                 cell.addEventListener('click', () => {
                     selectedDate = cellDate;
-                    console.log(`Date sélectionnée : ${selectedDate}`);
                     openEventPopup({ date, month, year }, cell);
                 });
                 date++;
@@ -128,66 +122,141 @@ function loadMonthView(month, year, events) {
     }
 }
 
+function displayAllEventsPopup(dayEvents) {
+    const popupContent = document.querySelector('.popup-content');
+    popupContent.innerHTML = ''; // Vider le contenu précédent
+
+    dayEvents.forEach(event => {
+        const eventItem = document.createElement('div');
+        eventItem.classList.add('popup-event-item');
+        eventItem.textContent = `${event.title} - ${event.description || ''}`;
+        popupContent.appendChild(eventItem);
+    });
+    eventPopup.style.display = 'block'; // Afficher le popup
+}
+
 // Fonction pour charger la vue "semaine"
 function loadWeekView(date, events) {
     const startOfWeek = new Date(date);
     const dayOfWeek = startOfWeek.getDay();
-
-    // Ajustement pour commencer la semaine le lundi
-    const dayOffset = (dayOfWeek === 0 ? 6 : dayOfWeek - 1); // Dimanche (0) devient le dernier jour
-    startOfWeek.setDate(startOfWeek.getDate() - dayOffset);  // Ajuster pour que le début soit lundi
-
+    const dayOffset = (dayOfWeek === 0 ? 6 : dayOfWeek - 1); // Commencer la semaine le lundi
+    startOfWeek.setDate(startOfWeek.getDate() - dayOffset);
     const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6);  // Calculer la fin de la semaine (Dimanche)
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
 
-    // Mise à jour de l'affichage de la semaine
+    const pixelsPerHour = 100; // 100 pixels par heure
+
+    // Récupérer les heures de travail configurées par l'utilisateur
+    const workStart = parseInt(document.getElementById('workStart').value.split(':')[0]);
+    const workEnd = parseInt(document.getElementById('workEnd').value.split(':')[0]);
+
     monthYearDisplay.innerHTML = `Semaine du ${startOfWeek.getDate()} ${months[startOfWeek.getMonth()]} au ${endOfWeek.getDate()} ${months[endOfWeek.getMonth()]}`;
+    calendarTable.innerHTML = ''; // Vider la table
 
-    const row = document.createElement('tr');
+    for (let hour = 0; hour < 24; hour++) {
+        // Afficher uniquement les heures dans la plage configurée
+        if (hour < workStart || hour >= workEnd) {
+            continue; // Ignorer les heures en dehors de la plage
+        }
 
-    for (let i = 0; i < 7; i++) {
-        const cell = document.createElement('td');
-        const currentDay = new Date(startOfWeek);
-        currentDay.setDate(startOfWeek.getDate() + i);
+        const row = document.createElement('tr');
+        row.classList.add('hour-row');
 
-        // Afficher uniquement la date dans la case (sans le jour de la semaine)
-        const dayText = `${currentDay.getDate()}`;
-        cell.appendChild(document.createTextNode(dayText));
+        // Colonne de gauche avec l'heure
+        const hourCell = document.createElement('td');
+        hourCell.classList.add('hour-label');
+        hourCell.textContent = `${String(hour).padStart(2, '0')}:00`;
+        row.appendChild(hourCell);
 
-        const dayEvents = events.filter(event => {
-            const eventDate = new Date(event.start);
-            return eventDate.getDate() === currentDay.getDate() &&
-                eventDate.getMonth() === currentDay.getMonth() &&
-                eventDate.getFullYear() === currentDay.getFullYear();
-        });
+        // Ajouter les cellules pour chaque jour de la semaine
+        for (let i = 0; i < 7; i++) {
+            const cell = document.createElement('td');
+            cell.classList.add('hour-cell');
+            cell.style.position = 'relative';
 
-        dayEvents.forEach(event => {
-            const eventElement = document.createElement('div');
-            eventElement.classList.add('event');
-            eventElement.textContent = event.title;
+            const currentDay = new Date(startOfWeek);
+            currentDay.setDate(startOfWeek.getDate() + i);
+            currentDay.setHours(hour, 0, 0, 0);
 
-            // Ajouter la couleur de la catégorie
-            const category = event.category || 'rendez-vous';  // Catégorie par défaut "rendez-vous"
-            eventElement.style.backgroundColor = categoryColors[category] || 'blue';
-
-            eventElement.addEventListener('click', (e) => {
-                e.stopPropagation();
-                openEventPopup(event, cell);
+            // Filtrer les événements de la journée
+            const dayEvents = events.filter(event => {
+                const eventStart = new Date(event.start);
+                const eventEnd = new Date(event.end);
+                return (
+                    currentDay.getDate() === eventStart.getDate() &&
+                    currentDay.getMonth() === eventStart.getMonth() &&
+                    currentDay.getFullYear() === eventStart.getFullYear() &&
+                    eventEnd > currentDay
+                );
             });
-            cell.appendChild(eventElement);
-        });
 
-        cell.addEventListener('click', () => {
-            selectedDate = currentDay;
-            openEventPopup({ date: selectedDate.getDate(), month: selectedDate.getMonth(), year: selectedDate.getFullYear() }, cell);
-        });
+            // Gérer les groupes de chevauchement pour la journée entière
+            const overlapGroups = [];
+            dayEvents.forEach(event => {
+                const eventStart = new Date(event.start);
+                const eventEnd = new Date(event.end);
 
-        row.appendChild(cell);
+                let addedToGroup = false;
+                for (let group of overlapGroups) {
+                    if (group.some(ev => new Date(ev.end) > eventStart && new Date(ev.start) < eventEnd)) {
+                        group.push(event);
+                        addedToGroup = true;
+                        break;
+                    }
+                }
+                if (!addedToGroup) {
+                    overlapGroups.push([event]);
+                }
+            });
+
+            // Créer et positionner chaque événement unique en fonction des chevauchements
+            overlapGroups.forEach(group => {
+                const groupWidth = 100 / group.length; // Diviser la largeur entre événements du groupe
+
+                group.forEach((event, index) => {
+                    const eventElement = document.createElement('div');
+                    eventElement.classList.add('event');
+                    eventElement.textContent = event.title;
+                    eventElement.dataset.eventId = event.id;
+
+                    const eventStart = new Date(event.start);
+                    const eventEnd = new Date(event.end);
+                    const durationInMinutes = (eventEnd - eventStart) / 60000;
+
+                    // Calculer la hauteur en fonction de la durée totale
+                    const cellHeight = (durationInMinutes / 60) * pixelsPerHour;
+                    const topOffset = (eventStart.getHours() - hour) * pixelsPerHour + (eventStart.getMinutes() / 60) * pixelsPerHour;
+
+                    // Appliquer les styles pour la largeur et le positionnement en hauteur
+                    eventElement.style.height = `${cellHeight}px`;
+                    eventElement.style.width = `${groupWidth}%`;
+                    eventElement.style.left = `${index * groupWidth}%`;
+                    eventElement.style.top = `${topOffset}px`;
+                    eventElement.style.position = 'absolute';
+                    eventElement.style.backgroundColor = categoryColors[event.category] || 'blue';
+
+                    // Éviter les duplications
+                    if (!cell.querySelector(`.event[data-event-id="${event.id}"]`)) {
+                        eventElement.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            openEventPopup(event, cell);
+                        });
+                        cell.appendChild(eventElement);
+                    }
+                });
+            });
+
+            // Gérer l'ajout de nouveaux rendez-vous en cliquant dans une zone vide
+            cell.addEventListener('click', () => {
+                selectedDate = new Date(currentDay);
+                openEventPopup({ date: selectedDate.getDate(), month: selectedDate.getMonth(), year: selectedDate.getFullYear() }, cell);
+            });
+
+            row.appendChild(cell);
+        }
+        calendarTable.appendChild(row);
     }
-
-    calendarTable.appendChild(row);
 }
-
 // Fonction pour ouvrir le popup d'événement
 function openEventPopup(event, cell) {
     currentEvent = event;

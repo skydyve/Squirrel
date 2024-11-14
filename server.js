@@ -111,7 +111,19 @@ db.serialize(() => {
         )
     `);
 });
-
+//creation table contact
+db.serialize(() => {
+    db.run(`
+        CREATE TABLE IF NOT EXISTS contacts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    client_id INTEGER,
+    nom TEXT,
+    prenom TEXT,
+    telephone TEXT,
+    email TEXT
+);
+    `);
+});
 // Création de la table agenda si elle n'existe pas déjà
 db.serialize(() => {
     db.run(`
@@ -127,6 +139,7 @@ db.serialize(() => {
         )
     `);
 });
+
 
 // Middleware pour vérifier si un utilisateur est déjà enregistré
 function checkIfUserExists(req, res, next) {
@@ -629,7 +642,81 @@ app.delete('/delete-bien/:id', authenticateToken, (req, res) => {
     });
 });
 
+app.post('/create-contact', authenticateToken, (req, res) => {
+    const { client_id, nom, prenom, telephone, email } = req.body;
 
+    if (!client_id || !nom || !prenom) {
+        return res.status(400).json({ error: "ID du client, nom, et prénom sont requis." });
+    }
+
+    db.run(
+        `INSERT INTO contacts (client_id, nom, prenom, telephone, email) VALUES (?, ?, ?, ?, ?)`,
+        [client_id, nom, prenom, telephone, email],
+        function (err) {
+            if (err) {
+                console.error('Erreur lors de la création du contact:', err);
+                return res.status(500).json({ error: "Erreur lors de la création du contact." });
+            }
+            res.status(200).json({ message: "Contact ajouté avec succès", contactId: this.lastID });
+        }
+    );
+});
+
+app.get('/get-contacts/:clientId', authenticateToken, (req, res) => {
+    const clientId = req.params.clientId;
+
+    db.all('SELECT * FROM contacts WHERE client_id = ?', [clientId], (err, rows) => {
+        if (err) {
+            console.error(err.message);
+            return res.status(500).json({ error: 'Erreur lors de la récupération des contacts' });
+        }
+        res.json(rows); // Retourne un tableau d'objets
+    });
+});
+
+app.get('/get-contact/:id', authenticateToken, (req, res) => {
+    const contactId = req.params.id;
+
+    db.get('SELECT * FROM contacts WHERE id = ?', [contactId], (err, row) => {
+        if (err) {
+            console.error('Erreur lors de la récupération du contact :', err);
+            return res.status(500).json({ error: 'Erreur lors de la récupération du contact.' });
+        }
+        if (!row) {
+            return res.status(404).json({ error: 'Contact non trouvé.' });
+        }
+        res.json(row); // Renvoie les détails du contact sous forme d'objet JSON
+    });
+});
+
+app.delete('/delete-contact/:id', authenticateToken, (req, res) => {
+    const contactId = req.params.id;
+
+    db.run('DELETE FROM contacts WHERE id = ?', [contactId], function (err) {
+        if (err) {
+            console.error('Erreur lors de la suppression du contact :', err);
+            return res.status(500).json({ message: 'Erreur lors de la suppression du contact.' });
+        }
+        res.json({ message: 'Contact supprimé avec succès.' });
+    });
+});
+
+app.put('/update-contact/:id', authenticateToken, (req, res) => {
+    const contactId = req.params.id;
+    const { nom, prenom, telephone, email } = req.body;
+
+    db.run(
+        `UPDATE contacts SET nom = ?, prenom = ?, telephone = ?, email = ? WHERE id = ?`,
+        [nom, prenom, telephone, email, contactId],
+        function (err) {
+            if (err) {
+                console.error('Erreur lors de la mise à jour du contact :', err);
+                return res.status(500).json({ message: 'Erreur lors de la mise à jour du contact.' });
+            }
+            res.status(200).json({ message: 'Contact mis à jour avec succès.' });
+        }
+    );
+});
 
 // Lancement du serveur HTTPS
 https.createServer(httpsOptions, app).listen(PORT, () => {
