@@ -71,7 +71,7 @@
     <button id="openBiensForm" class="biens-btn" style="float: right; width: auto;">Ajouter des biens</button>
     <!-- Bouton pour afficher la liste des biens -->
     <button id="showBiensList" class="btn" style="float: right; width: auto; margin-right: 10px;">Liste des biens</button>
-
+    <input type="hidden" id="currentPhotoUrl" name="currentPhotoUrl">
     <h2>Modifier Client</h2>
     <div class="client-form">
         <table>
@@ -126,6 +126,7 @@
 
    <!-- Formulaire des biens (réorganisé) -->
 <div id="biensForm" style="display:none;">
+    <input type="hidden" id="currentPhotoUrl" name="currentPhotoUrl">
     <button id="biens-back-btn" class="back-btn">← Retour</button>
     <h3>Page accueil</h3>
     <table>
@@ -197,7 +198,7 @@
                 </div>
             </td>
         </tr>
-        <tr id="cheminéeOptions" style="display:none;">
+        <tr id="chemineeOptions" style="display:none;">
             <td>Type de Cheminée :</td>
             <td>
                 <label><input type="checkbox" id="chemineeGranule" value="chemineeGranule"> Granulé</label>

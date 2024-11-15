@@ -144,7 +144,7 @@ function loadWeekView(date, events) {
     const endOfWeek = new Date(startOfWeek);
     endOfWeek.setDate(startOfWeek.getDate() + 6);
 
-    const pixelsPerHour = 100; // 100 pixels par heure
+    const pixelsPerHour = 50; // Réduction à 50 pixels par heure pour un affichage plus compact
 
     // Récupérer les heures de travail configurées par l'utilisateur
     const workStart = parseInt(document.getElementById('workStart').value.split(':')[0]);

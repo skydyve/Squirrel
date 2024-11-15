@@ -119,9 +119,10 @@
     </tr>
     <tr>
         <td>Clôture :</td>
-        <td><input type="checkbox" id="cloture"></td>
-        <td>Code portail :</td>
-        <td><input type="text" id="code_portail"></td>
+        <td>
+            <label><input type="radio" name="cloture" value="oui"> Oui</label>
+            <label><input type="radio" name="cloture" value="non" checked> Non</label>
+        </td>
     </tr>
     <tr>
         <td>Piscine :</td>
@@ -138,16 +139,22 @@
     </tr>
     <tr>
         <td>Poolhouse :</td>
-        <td><input type="checkbox" id="poolhouse"></td>
+        <td>
+            <label><input type="radio" name="poolhouse" value="oui"> Oui</label>
+            <label><input type="radio" name="poolhouse" value="non" checked> Non</label>
+        </td>
     </tr>
     <tr id="poolhouseDetails" style="display: none;">
         <td>Surface Poolhouse (m²) :</td>
         <td><input type="number" id="surface_poolhouse"></td>
     </tr>
-        <tr>
-            <td>Jacuzzi :</td>
-            <td><input type="checkbox" id="jacuzzi"></td>
-        </tr>
+    <tr>
+        <td>Jacuzzi :</td>
+        <td>
+            <input type="radio" name="jacuzzi" value="oui"> Oui
+            <input type="radio" name="jacuzzi" value="non" checked> Non
+        </td>
+    </tr>
     <tr>
         <td>Terrasse (m²) :</td>
         <td><input type="number" id="surface_terrasse"></td>

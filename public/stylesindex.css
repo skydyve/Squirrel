@@ -770,3 +770,82 @@ td label {
     cursor: pointer;
     padding: 0 10px;
 }
+
+.bien-image {
+    width: 50px; /* Ajustez selon vos besoins */
+    height: 50px; /* Ajustez selon vos besoins */
+    object-fit: cover; /* Maintient le rapport d'aspect */
+    border-radius: 5px; /* Coins arrondis */
+    margin-left: 10px; /* Espacement avec le texte */
+}
+
+.bien-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Garder l'espacement entre le texte et l'image */
+    padding: 10px;
+    background-color: #5151e5; /* Ajustez la couleur de fond si nécessaire */
+    color: white;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.bien-image {
+    width: 50px; /* Taille fixe pour éviter le changement de disposition */
+    height: 50px;
+    object-fit: cover;
+    border-radius: 5px;
+    margin-left: 10px;
+}
+
+.bien-text {
+    flex-grow: 1; /* Prend tout l'espace restant */
+    text-align: left;
+    margin-right: 10px; /* Espace avec l'image */
+}
+
+/* Colonne des heures */
+.hour-label {
+    text-align: right;
+    padding-right: 10px;
+    font-weight: bold;
+    background-color: #f0f0f0;
+    color: #333;
+    width: 60px; /* Largeur ajustable selon vos besoins */
+    font-size: 14px;
+}
+
+/* Hauteur des lignes d'heures dans la vue compacte */
+.hour-row {
+    height: 50px; /* Compacter les lignes à 50px de hauteur */
+}
+
+/* Styles pour les cellules des heures */
+.hour-cell {
+    vertical-align: top;
+    position: relative;
+    border: 1px solid #ddd;
+}
+
+/* Réduire la hauteur des cellules du calendrier */
+.calendar td {
+    height: 50px; /* Hauteur réduite pour une vue plus compacte */
+    padding: 5px;
+    vertical-align: top;
+    position: relative;
+}
+
+/* Styles des événements pour une vue compacte */
+.event {
+    background-color: #5151e5;
+    color: white;
+    padding: 3px;
+    margin-top: 2px;
+    border-radius: 5px;
+    font-size: 12px;
+    position: absolute;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+}
