@@ -181,10 +181,11 @@ document.getElementById('wifi').addEventListener('change', function () {
         const photoPreview = document.getElementById('photoPreview');
         const currentPhotoUrlElem = document.getElementById('currentPhotoUrl');
         const currentPhotoUrl = currentPhotoUrlElem ? currentPhotoUrlElem.value : '';
+        
     
         const formData = new FormData();
     
-        // Ajout des informations de base avec vérification
+        // Ajout des informations principales
         formData.append('nom_bien', nomBienElem ? nomBienElem.value : '');
         formData.append('nom_proprietaire', nomProprietaireElem ? nomProprietaireElem.value : '');
         formData.append('saisonnier', document.getElementById('saisonnier')?.checked ? 'true' : 'false');
@@ -197,11 +198,13 @@ document.getElementById('wifi').addEventListener('change', function () {
         formData.append('nbr_salle_eau', document.getElementById('nbr_salle_eau')?.value || '');
         formData.append('nbr_salon', document.getElementById('nbr_salon')?.value || '');
         formData.append('code_alarme', document.getElementById('code_alarme')?.value || '');
+        formData.append('code_portail', document.getElementById('code_portail').value || '');
+        formData.append('nature_sol', document.getElementById('nature_sol')?.value || '');
+        formData.append('chauffage_eau', document.getElementById('chauffage_eau')?.value || '');
+        formData.append('nature_sol_terrasse', document.getElementById('nature_sol_terrasse')?.value || '');
+        formData.append('details', document.getElementById('details')?.value || '');
         formData.append('surface_jardin', document.getElementById('surface_jardin')?.value || '');
-        formData.append(
-            'cloture',
-            document.querySelector('input[name="cloture"]:checked')?.value || 'non'
-        );
+        formData.append('cloture', document.querySelector('input[name="cloture"]:checked')?.value || 'non');
         formData.append('piscine_type', document.getElementById('piscine_type')?.value || 'aucune');
         formData.append('piscine_longueur', document.getElementById('piscine_longueur')?.value || '');
         formData.append('piscine_largeur', document.getElementById('piscine_largeur')?.value || '');
@@ -209,20 +212,33 @@ document.getElementById('wifi').addEventListener('change', function () {
         formData.append('ssid', document.getElementById('ssid')?.value || '');
         formData.append('wifiPassword', document.getElementById('wifiPassword')?.value || '');
     
-        // Poolhouse avec vérification
-        formData.append(
-            'poolhouse',
-            document.querySelector('input[name="poolhouse"]:checked')?.value || 'non'
-        );
+        // Poolhouse
+        formData.append('poolhouse', document.querySelector('input[name="poolhouse"]:checked')?.value || 'non');
         formData.append('surface_poolhouse', document.getElementById('surface_poolhouse')?.value || '');
+    
+        // Modes de chauffage
+        formData.append('chauffage_sol', document.getElementById('chauffageSol')?.checked ? 'true' : 'false');
+        formData.append('radiateur', document.getElementById('radiateur')?.checked ? 'true' : 'false');
+        formData.append('cheminee', document.getElementById('cheminee')?.checked ? 'true' : 'false');
+        formData.append('climatisation', document.getElementById('climatisation')?.checked ? 'true' : 'false');
+        formData.append('poele', document.getElementById('poele')?.checked ? 'true' : 'false');
+        formData.append('fioul', document.getElementById('fioul')?.checked ? 'true' : 'false');
+    
+        // Type de cheminée
+        formData.append('cheminee_granule', document.getElementById('chemineeGranule')?.checked ? 'true' : 'false');
+        formData.append('cheminee_bois', document.getElementById('chemineeBois')?.checked ? 'true' : 'false');
     
         if (photoInput?.files.length > 0) {
             formData.append('photoBien', photoInput.files[0]);
         } else if (currentPhotoUrl) {
             formData.append('photo_url', currentPhotoUrl);
         } else {
-            formData.append('photo_url', '/uploads/image.png'); // Chemin de l'image par défaut
+            formData.append('photo_url', '/uploads/image.png'); // Image par défaut
         }
+    
+        // Vérifiez les données avant de les envoyer
+        console.log('Données envoyées au serveur :');
+        formData.forEach((value, key) => console.log(key, value));
     
         const method = currentBienId ? 'PUT' : 'POST';
         const url = currentBienId ? `/update-bien/${currentBienId}` : '/create-bien';
@@ -240,8 +256,8 @@ document.getElementById('wifi').addEventListener('change', function () {
                 loadBiens();
                 resetBienForm();
     
-                // Réinitialiser l'image à l'image par défaut
-                photoPreview.src = '/uploads/image.png'; // Chemin de l'image par défaut
+                // Réinitialiser l'image par défaut
+                photoPreview.src = '/uploads/image.png';
                 photoPreview.style.display = 'block';
     
                 createBienForm.style.display = 'none';
@@ -299,6 +315,10 @@ document.getElementById('wifi').addEventListener('change', function () {
                 'nbr_salle_bain': bien.nbr_salle_de_bain,
                 'nbr_salon': bien.nbr_salon,
                 'code_alarme': bien.code_alarme,
+                'chauffage_eau': bien.chauffage_eau,
+                'nature_sol': bien.nature_sol,
+                'nature_sol_terrasse': bien.nature_sol_terrasse,
+                'details': bien.details,
                 'surface_jardin': bien.surface_jardin,
                 'surface_terrasse': bien.surface_terrasse,
                 'code_portail': bien.code_portail,
@@ -389,6 +409,11 @@ document.getElementById('wifi').addEventListener('change', function () {
         document.getElementById('nbr_salle_bain').value = '';
         document.getElementById('nbr_salon').value = '';
         document.getElementById('code_alarme').value = '';
+        document.getElementById('code_portail').value = '';
+        document.getElementById('nature_sol').value = '';
+        document.getElementById('details').value = '';
+        document.getElementById('nature_sol_terrasse').value = '';
+        document.getElementById('chauffage_eau').value = '';
         document.getElementById('cheminee').checked = false;
         document.getElementById('chauffageSol').checked = false;
         document.getElementById('poele').checked = false;

@@ -183,6 +183,10 @@
             <td><input type="text" id="codeAlarme"></td>
         </tr>
         <tr>
+            <td>Nature Sol :</td>
+            <td><input type="text" id="nature_sol"></td>
+        </tr>
+        <tr>
             <td>Mode de chauffage :</td>
             <td>
                 <div class="dropdown">
@@ -204,6 +208,10 @@
                 <label><input type="checkbox" id="chemineeGranule" value="chemineeGranule"> Granulé</label>
                 <label><input type="checkbox" id="chemineeBois" value="chemineeBois"> Bois</label>
             </td>
+        </tr>
+        <tr>
+            <td>Chauffage de l'eau :</td>
+            <td><input type="text" id="chauffage_eau"></td>
         </tr>
     </table>
     <h3>WiFi</h3>
@@ -268,8 +276,17 @@
             <td>Terrasse (m²) :</td>
             <td><input type="number" id="surfaceTerrasse"></td>
         </tr>
+        <tr>
+            <td>Nature Sol Terrasse</td>
+            <td><input type="text" id="nature_sol_terrasse"></td>
+        </tr>
     </table>
-
+    <table>
+        <tr>
+            <td>Details :</td>
+            <td><input type="text" id="details"></td>
+        </tr>
+    </table>
     <button type="submit" id="saveBiensBtn">Enregistrer le bien</button>
     <button id="deleteBienBtn" class="btn delete-btn">Supprimer le bien</button>
 </div>

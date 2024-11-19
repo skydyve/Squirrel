@@ -73,6 +73,10 @@
                 <td><input type="text" id="code_alarme"></td>
             </tr>
             <tr>
+                <td>Nature Sol :</td>
+                <td><input type="text" id="nature_sol"></td>
+            </tr>
+            <tr>
                 <td>Mode de chauffage :</td>
                 <td>
                     <div class="dropdown">
@@ -95,7 +99,13 @@
                     <label><input type="checkbox" id="chemineeBois" value="chemineeBois"> Bois</label>
                 </td>
             </tr>
-
+        
+        </table>
+        <table>
+            <tr>
+                <td>Chauffage de l'eau :</td>
+                <td><input type="text" id="chauffage_eau"></td>
+            </tr>
         </table>
         <h3>Wi-Fi</h3>
         <table>
@@ -119,10 +129,11 @@
     </tr>
     <tr>
         <td>Clôture :</td>
-        <td>
-            <label><input type="radio" name="cloture" value="oui"> Oui</label>
-            <label><input type="radio" name="cloture" value="non" checked> Non</label>
+        <td><input type="radio" name="cloture" value="oui"> Oui
+            <input type="radio" name="cloture" value="non"> Non
         </td>
+        <td>Code portail :</td>
+        <td><input type="text" id="code_portail"></td>
     </tr>
     <tr>
         <td>Piscine :</td>
@@ -158,6 +169,17 @@
     <tr>
         <td>Terrasse (m²) :</td>
         <td><input type="number" id="surface_terrasse"></td>
+    </tr>
+    <tr>
+        <td>Nature Sol Terrasse :</td>
+        <td><input type="text" id="nature_sol_terrasse"></td>
+    </tr>
+</table>
+
+<table>
+    <tr>
+        <td>Details :</td>
+        <td><input type="text" id="details"></td>
     </tr>
 </table>
 

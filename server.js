@@ -524,7 +524,11 @@ app.post('/create-bien', authenticateToken, upload.single('photoBien'), (req, re
         piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse, 
         wifi, ssid, wifiPassword, mode_chauffage, cheminee_granule, cheminee_bois, chauffage_sol, poele,
         chauffage_electrique, chauffage_fioul, chauffage_bois, chauffage_pompe_chaleur, chauffage_solaire, 
-        poolhouse, surface_poolhouse
+        poolhouse, surface_poolhouse, 
+        nature_sol, // Ajouté
+        nature_sol_terrasse, // Ajouté
+        chauffage_eau, // Ajouté
+        details // Ajouté
     } = req.body;
 
     const photo_url = req.file ? `/uploads/${req.file.filename}` : null; // Photo optionnelle
@@ -540,23 +544,22 @@ app.post('/create-bien', authenticateToken, upload.single('photoBien'), (req, re
         code_portail, piscine_type, piscine_longueur, piscine_largeur, jacuzzi, 
         surface_terrasse, nom_bien, saisonnier, annuel, cheminee, radiateur, fioul, 
         climatisation, wifi, ssid, wifiPassword, mode_chauffage, cheminee_granule, 
-        cheminee_bois, chauffage_sol, poele, poolhouse, surface_poolhouse, 
-        chauffage_electrique, chauffage_fioul, chauffage_bois, chauffage_pompe_chaleur, 
-        chauffage_solaire, photo_url -- Ajout de la colonne photo_url
+        cheminee_bois, chauffage_sol, poele, poolhouse, surface_poolhouse, photo_url,
+        nature_sol, nature_sol_terrasse, chauffage_eau, details -- Ajout des nouveaux champs
     ) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 `;
 
-db.run(sql, [
-    client_id, adresse, nom_proprietaire, nbr_etage || 0, surface_maison || null, nbr_chambres || 0,
-    nbr_salle_de_bain || 0, nbr_salle_eau || 0, nbr_salon || 0, code_alarme || null, surface_jardin || null,
-    cloture || false, code_portail || null, piscine_type || null, piscine_longueur || null,
-    piscine_largeur || null, jacuzzi || false, surface_terrasse || null, nom_bien,
-    saisonnier || false, annuel || false, cheminee || false, radiateur || false, fioul || false,
-    climatisation || false, wifi || false, ssid || null, wifiPassword || null, mode_chauffage || null,
-    cheminee_granule || false, cheminee_bois || false, chauffage_sol || false, poele || false,
-    poolhouse || false, surface_poolhouse || null, chauffage_electrique || false, chauffage_fioul || false,
-    chauffage_bois || false, chauffage_pompe_chaleur || false, chauffage_solaire || false, photo_url || null  // Ajout de photo_url ici
+    db.run(sql, [
+        client_id, adresse, nom_proprietaire, nbr_etage || 0, surface_maison || null, nbr_chambres || 0,
+        nbr_salle_de_bain || 0, nbr_salle_eau || 0, nbr_salon || 0, code_alarme || null, surface_jardin || null,
+        cloture || false, code_portail || null, piscine_type || null, piscine_longueur || null,
+        piscine_largeur || null, jacuzzi || false, surface_terrasse || null, nom_bien,
+        saisonnier || false, annuel || false, cheminee || false, radiateur || false, fioul || false,
+        climatisation || false, wifi || false, ssid || null, wifiPassword || null, mode_chauffage || null,
+        cheminee_granule || false, cheminee_bois || false, chauffage_sol || false, poele || false,
+        poolhouse || false, surface_poolhouse || null, photo_url || null,
+        nature_sol || null, nature_sol_terrasse || null, chauffage_eau || null, details || null 
 ], function (err) {
     if (err) {
         console.error('Erreur lors de la création du bien :', err);
@@ -585,6 +588,10 @@ app.get('/uploads/:filename', authenticateToken, (req, res) => {
 
 // Route pour modifier un bien avec option de photo
 app.put('/update-bien/:id', authenticateToken, upload.single('photoBien'), (req, res) => {
+    console.log('Requête reçue pour la mise à jour du bien avec ID :', req.params.id);
+    console.log('Données reçues :', req.body);
+    console.log('Fichier reçu :', req.file);
+
     const bienId = req.params.id;
     const {
         nom_bien, adresse, nom_proprietaire, saisonnier, annuel,
@@ -593,24 +600,26 @@ app.put('/update-bien/:id', authenticateToken, upload.single('photoBien'), (req,
         climatisation, surface_jardin, cloture, code_portail,
         piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse,
         wifi, ssid, wifiPassword, mode_chauffage, cheminee_granule, cheminee_bois, chauffage_sol, poele,
-        poolhouse, surface_poolhouse
+        poolhouse, surface_poolhouse,
+        nature_sol, nature_sol_terrasse, chauffage_eau, details,
     } = req.body;
 
     const photo_url = req.file ? `/uploads/${req.file.filename}` : req.body.photo_url; // Mise à jour ou conservation de l'ancienne URL
 
     const sql = `
-        UPDATE biens 
-        SET 
-            nom_bien = ?, adresse = ?, nom_proprietaire = ?, saisonnier = ?, 
-            annuel = ?, nbr_etage = ?, surface_maison = ?, nbr_chambres = ?, 
-            nbr_salle_de_bain = ?, nbr_salle_eau = ?, nbr_salon = ?, 
-            code_alarme = ?, cheminee = ?, radiateur = ?, fioul = ?, 
-            climatisation = ?, surface_jardin = ?, cloture = ?, code_portail = ?, 
-            piscine_type = ?, piscine_longueur = ?, piscine_largeur = ?, 
-            jacuzzi = ?, surface_terrasse = ?, wifi = ?, ssid = ?, wifiPassword = ?, 
-            mode_chauffage = ?, cheminee_granule = ?, cheminee_bois = ?, chauffage_sol = ?, poele = ?,
-            poolhouse = ?, surface_poolhouse = ?, photo_url = ?  -- Mise à jour de l'URL de la photo
-        WHERE id = ?
+    UPDATE biens 
+    SET 
+        nom_bien = ?, adresse = ?, nom_proprietaire = ?, saisonnier = ?, 
+        annuel = ?, nbr_etage = ?, surface_maison = ?, nbr_chambres = ?, 
+        nbr_salle_de_bain = ?, nbr_salle_eau = ?, nbr_salon = ?, 
+        code_alarme = ?, cheminee = ?, radiateur = ?, fioul = ?, 
+        climatisation = ?, surface_jardin = ?, cloture = ?, code_portail = ?, 
+        piscine_type = ?, piscine_longueur = ?, piscine_largeur = ?, 
+        jacuzzi = ?, surface_terrasse = ?, wifi = ?, ssid = ?, wifiPassword = ?, 
+        mode_chauffage = ?, cheminee_granule = ?, cheminee_bois = ?, chauffage_sol = ?, poele = ?,
+        poolhouse = ?, surface_poolhouse = ?, photo_url = ?, 
+        nature_sol = ?, nature_sol_terrasse = ?, chauffage_eau = ?, details = ? 
+    WHERE id = ?
     `;
 
     db.run(sql, [
@@ -620,11 +629,13 @@ app.put('/update-bien/:id', authenticateToken, upload.single('photoBien'), (req,
         climatisation, surface_jardin, cloture, code_portail,
         piscine_type, piscine_longueur, piscine_largeur, jacuzzi, surface_terrasse,
         wifi, ssid, wifiPassword, mode_chauffage, cheminee_granule, cheminee_bois, chauffage_sol, poele,
-        poolhouse, surface_poolhouse, photo_url, bienId
+        poolhouse, surface_poolhouse, photo_url,
+        nature_sol, nature_sol_terrasse, chauffage_eau, details,
+        bienId
     ], function (err) {
         if (err) {
-            console.error('Erreur lors de la mise à jour du bien :', err);
-            return res.status(500).json({ error: 'Erreur lors de la mise à jour du bien.' });
+            console.error('Erreur lors de la mise à jour du bien :', err.message);
+            return res.status(500).json({ error: 'Erreur lors de la mise à jour du bien.', details: err.message });
         }
         res.json({ message: 'Bien mis à jour avec succès.' });
     });
