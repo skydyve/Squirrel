@@ -1,9 +1,4 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
+/* Corps global */
 body {
     font-family: 'Arial', sans-serif;
     background: linear-gradient(135deg, #72edf2 10%, #5151e5 100%);
@@ -11,50 +6,117 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    margin: 0;
 }
 
-.login-container, .dashboard-container {
+/* Conteneur de login */
+.login-container {
     background: #fff;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     text-align: center;
-    animation: fadeIn 1s ease-in-out;
+    animation: fadeIn 1s ease-in-out; /* Par défaut */
+    width: 320px;
+    max-width: 90%; /* Responsive */
 }
 
-h2, h1 {
-    margin-bottom: 20px;
+/* Classe pour désactiver l'animation fadeIn */
+.no-animation {
+    animation: none;
 }
 
+/* Animation de tremblement */
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+}
+
+/* Classe pour activer le tremblement */
+.shake {
+    animation: shake 0.5s ease-in-out;
+}
+
+/* Champs de texte */
 input {
     width: 100%;
-    padding: 10px;
+    height: 50px;
+    padding: 0 10px;
     margin: 10px 0;
-    border: none;
+    border: 1px solid #ccc;
     border-radius: 5px;
     background-color: #f1f1f1;
+    font-size: 16px;
+    box-sizing: border-box;
 }
 
+/* Conteneur pour le champ de mot de passe */
+.password-container {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+/* Champ de mot de passe */
+.password-container input {
+    padding-right: 40px;
+}
+
+/* Bouton pour afficher/masquer le mot de passe */
+.password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Icône du bouton */
+.password-toggle img {
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+}
+
+/* Bouton de soumission */
 button {
     width: 100%;
-    padding: 10px;
+    height: 50px;
+    padding: 0;
     background-color: #5151e5;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease-in-out;
+    font-size: 16px;
 }
 
 button:hover {
     background-color: #3434d4;
 }
 
+/* Message d'erreur */
 #error-msg {
     color: red;
     margin-top: 10px;
+    font-weight: bold;
+    font-size: 14px;
 }
 
+/* Animation d'apparition */
 @keyframes fadeIn {
     from {
         opacity: 0;

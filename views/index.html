@@ -14,6 +14,7 @@
                 <li><a href="#" id="home-link">Accueil</a></li>
                 <li><a href="#" id="client-link">Client</a></li>
                 <li><a href="#" id="biens-link">Biens</a></li>
+                <li><a href="#" id="interventions-link">Interventions</a></li>
                 <li><a href="#" id="agenda-link">Agenda</a></li>
                 <li><a href="#" id="parametres-link">Paramètres</a></li>
                 <li><a href="#" id="logout-btn">Déconnexion</a></li>
@@ -58,6 +59,9 @@
                         case '/biens':
                             loadScript('/secure-biens.js', 'initializeBiensPage');
                             break;
+                        case '/interventions':
+                            loadScript('/secure-interventions.js', 'initializeInterventionsPage');
+                            break;
                     }
                 })
                 .catch(error => {
@@ -94,6 +98,11 @@
     document.getElementById('biens-link').addEventListener('click', function (event) {
         event.preventDefault();
         loadContent('/biens');  // Charger dynamiquement la page biens
+    });
+
+    document.getElementById('interventions-link').addEventListener('click', function (event) {
+    event.preventDefault();
+    loadContent('/interventions');  // Charger dynamiquement la page interventions
     });
 
     document.getElementById('agenda-link').addEventListener('click', function (event) {

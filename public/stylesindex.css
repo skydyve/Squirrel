@@ -849,3 +849,56 @@ td label {
     white-space: nowrap;
     cursor: pointer;
 }
+
+.interventions-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 16px;
+    text-align: left;
+}
+
+.interventions-table th,
+.interventions-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+
+.interventions-table th {
+    background-color: #f4f4f4;
+    color: #333;
+    font-weight: bold;
+}
+
+.interventions-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.interventions-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+.interventions-table td button {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.interventions-table td button:hover {
+    background-color: #e60000;
+}
+
+textarea {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    background-color: #f9f9f9;
+    resize: vertical; /* Permettre un redimensionnement vertical */
+    width: 100%; /* La zone de texte occupe toute la largeur */
+}
+
+

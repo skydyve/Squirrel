@@ -1,0 +1,51 @@
+<div>
+    <h1>Gestion des Interventions</h1>
+
+    <!-- Bouton pour ouvrir le formulaire -->
+    <!-- Bouton pour ouvrir le popup -->
+<button id="open-form-btn">+ Ajouter une intervention</button>
+
+<!-- Popup pour les interventions -->
+<div id="intervention-popup" class="popup" style="display: none;">
+    <!-- Bouton pour fermer le popup -->
+    <button id="close-popup" class="close-popup-cross">×</button>
+    <h3>Nouvelle Intervention</h3>
+    <form id="intervention-form">
+        <label for="client-select">Client :</label>
+        <select id="client-select"></select>
+
+        <label for="bien-select">Bien :</label>
+        <select id="bien-select"></select>
+
+        <label for="duree">Durée :</label>
+        <input type="text" id="duree" placeholder="3:00">
+
+        <label for="heure-debut">Heure de début :</label>
+        <input type="time" id="heure-debut">
+
+        <label for="intervenant">Intervenant :</label>
+        <input type="text" id="intervenant" placeholder="Nom de l'intervenant">
+
+        <label for="details">Détails :</label>
+        <textarea id="details" placeholder="Détails de l'intervention"></textarea>
+
+        <button type="submit">Ajouter Intervention</button>
+    </form>
+</div>
+
+    <h2>Liste des Interventions</h2>
+    <table class="interventions-table">
+        <thead>
+            <tr>
+                <th>Client</th>
+                <th>Bien</th>
+                <th>Durée</th>
+                <th>Heure de début</th>
+                <th>Intervenant</th>
+                <th>Détails</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="interventions-table"></tbody>
+    </table>
+</div>

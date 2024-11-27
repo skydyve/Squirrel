@@ -85,9 +85,13 @@ db.serialize(() => {
         chauffage_bois BOOLEAN DEFAULT FALSE,
         chauffage_pompe_chaleur BOOLEAN DEFAULT FALSE,
         chauffage_solaire BOOLEAN DEFAULT FALSE,
-        poolhouse BOOLEAN DEFAULT FALSE,  -- Ajouter cette colonne pour le PoolHouse
-        surface_poolhouse REAL,  -- Ajouter cette colonne pour la surface du PoolHouse
+        poolhouse BOOLEAN DEFAULT FALSE,
+        surface_poolhouse REAL,
         photo_url TEXT,
+        nature_sol TEXT,                    -- Nouveau champ pour la nature du sol
+        nature_sol_terrasse TEXT,           -- Nouveau champ pour la nature du sol de la terrasse
+        chauffage_eau TEXT,                 -- Nouveau champ pour le type de chauffage de l'eau
+        details TEXT,                       -- Nouveau champ pour les détails
         FOREIGN KEY (client_id) REFERENCES clients (id) ON DELETE CASCADE
     )
     `);
@@ -136,6 +140,22 @@ db.serialize(() => {
             date TEXT,
             category TEXT,
             duration TEXT
+        )
+    `);
+});
+
+db.serialize(() => {
+    db.run(`
+        CREATE TABLE IF NOT EXISTS interventions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            client_id INTEGER NOT NULL,
+            bien_id INTEGER NOT NULL,
+            duree TEXT NOT NULL,
+            heure_debut TEXT NOT NULL,
+            intervenant TEXT NOT NULL,
+            details TEXT,
+            FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE,
+            FOREIGN KEY (bien_id) REFERENCES biens(id) ON DELETE CASCADE
         )
     `);
 });
@@ -281,6 +301,11 @@ app.get('/parametres', authenticateToken, (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'parametres.html'));  // Sert parametres.html uniquement si authentifié
 });
 
+// Route protégée pour la page interventions.html
+app.get('/interventions', authenticateToken, (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'interventions.html'));
+});
+
 // Route pour rechercher un client dans la base de données
 app.get('/search', authenticateToken, (req, res) => {
     const searchTerm = `%${req.query.term}%`; // Pour la recherche partielle
@@ -355,6 +380,10 @@ app.get('/secure-biens.js', authenticateToken, (req, res) => {
 app.get('/secure-agenda.js', authenticateToken, (req, res) => {
     // Servir le fichier agenda.js depuis le dossier views
     res.sendFile(path.join(__dirname, 'views', 'agenda.js'));
+});
+// Route protégée pour servir le script interventions.js
+app.get('/secure-interventions.js', authenticateToken, (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'interventions.js'));
 });
 
 app.delete('/delete-client/:id', authenticateToken, (req, res) => {
@@ -448,15 +477,6 @@ app.delete('/delete-appointment/:id', authenticateToken, (req, res) => {
     });
 });
 
-// Route pour obtenir tous les clients
-app.get('/get-clients', authenticateToken, (req, res) => {
-    db.all('SELECT * FROM clients', [], (err, rows) => {
-        if (err) {
-            return res.status(500).json({ message: 'Erreur lors de la récupération des clients.' });
-        }
-        res.json(rows); // Renvoie les clients sous forme de JSON
-    });
-});
 
 app.get('/accueil', authenticateToken, (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'accueil.html'));
@@ -727,6 +747,71 @@ app.put('/update-contact/:id', authenticateToken, (req, res) => {
             res.status(200).json({ message: 'Contact mis à jour avec succès.' });
         }
     );
+});
+
+app.get('/get-interventions', authenticateToken, (req, res) => {
+    const sql = `
+        SELECT 
+            interventions.id,
+            clients.nom AS client_nom,
+            clients.prenom AS client_prenom,
+            biens.nom_bien AS bien_nom,
+            interventions.duree,
+            interventions.heure_debut,
+            interventions.intervenant,
+            interventions.details
+        FROM interventions
+        JOIN clients ON interventions.client_id = clients.id
+        JOIN biens ON interventions.bien_id = biens.id
+    `;
+    db.all(sql, [], (err, rows) => {
+        if (err) {
+            return res.status(500).json({ error: 'Erreur lors de la récupération des interventions.' });
+        }
+        res.json(rows);
+    });
+});
+
+app.get('/get-biens-by-client/:clientId', authenticateToken, (req, res) => {
+    const clientId = req.params.clientId;
+    db.all('SELECT id, nom_bien FROM biens WHERE client_id = ?', [clientId], (err, rows) => {
+        if (err) {
+            return res.status(500).json({ error: 'Erreur lors de la récupération des biens.' });
+        }
+        res.json(rows);
+    });
+});
+
+app.post('/create-intervention', authenticateToken, (req, res) => {
+    const { client_id, bien_id, duree, heure_debut, intervenant, details } = req.body;
+
+    if (!client_id || !bien_id || !duree || !heure_debut || !intervenant) {
+        return res.status(400).json({ error: 'Tous les champs obligatoires doivent être remplis.' });
+    }
+
+    db.run(
+        `INSERT INTO interventions (client_id, bien_id, duree, heure_debut, intervenant, details) 
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        [client_id, bien_id, duree, heure_debut, intervenant, details],
+        function (err) {
+            if (err) {
+                console.error('Erreur lors de la création de l\'intervention:', err);
+                return res.status(500).json({ error: 'Erreur lors de la création de l\'intervention.' });
+            }
+            res.status(200).json({ message: 'Intervention ajoutée avec succès.', interventionId: this.lastID });
+        }
+    );
+});
+
+app.delete('/delete-intervention/:id', authenticateToken, (req, res) => {
+    const interventionId = req.params.id;
+
+    db.run('DELETE FROM interventions WHERE id = ?', [interventionId], function (err) {
+        if (err) {
+            return res.status(500).json({ error: 'Erreur lors de la suppression de l\'intervention.' });
+        }
+        res.status(200).json({ message: 'Intervention supprimée avec succès.' });
+    });
 });
 
 // Lancement du serveur HTTPS
